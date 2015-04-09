@@ -70,6 +70,7 @@
     <Compile Include="DataFactory.cs" />
     <Compile Include="DataTracker.cs" />
     <Compile Include="FileBasedCache.cs" />
+    <Compile Include="Unity\GeoReference.cs" />
     <Compile Include="Logger.cs" />
     <Compile Include="observer\LoggedObserver.cs" />
     <Compile Include="Parsers\mimeparser.cs" />
@@ -102,6 +103,7 @@
     <Compile Include="Producers\VW_FGDC_XML_Producer.cs" />
     <Compile Include="Parsers\VW_JSON_Parser.cs" />
     <Compile Include="Producers\VW_JSON_Producer.cs" />
+    <Compile Include="Unity\GeoRefManager.cs" />
     <Compile Include="VWClient.cs" />
     <Compile Include="wcsUtils.cs" />
     <Compile Include="Producers\WCS_BIL_Producer.cs" />
