@@ -12,11 +12,17 @@ public class GeoReference
     List<DataRecord> recs;
     GameObject obj;
     Texture2D texture;
+    private DataRecord rec;
 
     // Constructor
-    public GeoReference(String refType)
+    public GeoReference(string refType)
     {
         type = refType;
+    }
+
+    public GeoReference(DataRecord rec)
+    {
+        recs.Add(rec);
     }
 
     // Methods
