@@ -81,7 +81,60 @@ public class DataRecord
     public string name;
     
     //****** Geospatial MetaData**/
-    public SerialVector2 resolution;
+    SerialVector2 resolution = Vector2.zero;
+
+    public SerialVector2 Resolution
+    {
+        get
+        {
+            Debug.Log(resolution.x);
+            Debug.Log(resolution == Vector2.zero);
+            Debug.Log(data == null);
+            if (resolution == Vector2.zero)
+            {
+                if (data == null)
+                    return resolution;
+                int Width = data.GetLength(0);
+                int Height = data.GetLength(1);
+
+                // boundingBox is LatLong
+                float xOrigin = boundingBox.x;
+                float yOrigin = boundingBox.y;
+                float width = boundingBox.width;
+                float height = boundingBox.height;
+
+                // Time to set the resolution if possible
+
+                // First convert these coordinates to UTM
+                Vector2 origin = coordsystem.transformToUTM(xOrigin, yOrigin);
+                Vector2 lowerRightCorner = coordsystem.transformToUTM(xOrigin + width, yOrigin - height);
+                Debug.Log(origin);
+                Debug.Log(lowerRightCorner);
+                // Getting average resolution in meters due to the points being in UTM
+                height = Math.Abs(origin.y - lowerRightCorner.y) / this.height;
+                width = Math.Abs(origin.x - lowerRightCorner.x) / this.width;
+                resolution = new Vector2(Math.Abs(origin.x - lowerRightCorner.x), Math.Abs(origin.y - lowerRightCorner.y));
+                Debug.Log("RESOLUTION: " + resolution.x + " " + resolution.y);
+            }
+            return resolution;
+        }
+    }
+
+    SerialRect utmBoundingBox = new SerialRect();
+    public SerialRect UTMBoundingBox
+    {
+        get
+        {
+            // Calculating utmBoundingBox
+            if (utmBoundingBox.x != 0 && utmBoundingBox.y != 0 && utmBoundingBox.width != 0 && utmBoundingBox.height != 0)
+            {
+                Vector2 UpperLeftCorner = coordsystem.transformToUTM(boundingBox.x, boundingBox.y);
+                Vector2 LowerRightCorner = coordsystem.transformToUTM(boundingBox.x + boundingBox.width, boundingBox.y - boundingBox.height);
+                utmBoundingBox = new SerialRect(new Rect(UpperLeftCorner.x, UpperLeftCorner.y, Math.Abs(UpperLeftCorner.x - LowerRightCorner.x), Math.Abs(UpperLeftCorner.y - LowerRightCorner.y)));
+            }
+            return utmBoundingBox;
+        }
+    }
 
     // This variable must be in Lat Long
     SerialVector2 WGS84Origin;

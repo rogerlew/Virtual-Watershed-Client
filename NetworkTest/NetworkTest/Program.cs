@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Collections;
-//using System.Threading.Tasks;
+//using System.Threading;
 
 namespace NetworkTest
 {
@@ -21,7 +21,7 @@ namespace NetworkTest
         static String VWPString = "http://vwp-dev.unm.edu/";
         static VWClient vwc;
         static DataObserver obs;
-        static GeoRefManager grm = new GeoRefManager(vwc);
+        static GeoRefManager grm;
 
         static void Recieved(List<string> message)
         {

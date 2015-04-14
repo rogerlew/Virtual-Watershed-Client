@@ -9,7 +9,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>NetworkTest</RootNamespace>
     <AssemblyName>NetworkTest</AssemblyName>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile>
     </TargetFrameworkProfile>
@@ -51,8 +51,17 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="GeoAPI">
+      <HintPath>Resources\GeoAPI.dll</HintPath>
+    </Reference>
     <Reference Include="ICSharpCode.SharpZipLib">
       <HintPath>SimpleJSON\plugins\ICSharpCode.SharpZipLib.dll</HintPath>
+    </Reference>
+    <Reference Include="Proj4Net">
+      <HintPath>Resources\Proj4Net.dll</HintPath>
+    </Reference>
+    <Reference Include="ProjNet">
+      <HintPath>Resources\ProjNet.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -70,6 +79,7 @@
     <Compile Include="DataFactory.cs" />
     <Compile Include="DataTracker.cs" />
     <Compile Include="FileBasedCache.cs" />
+    <Compile Include="Unity\CoordSystem.cs" />
     <Compile Include="Unity\GeoReference.cs" />
     <Compile Include="Logger.cs" />
     <Compile Include="observer\LoggedObserver.cs" />
@@ -104,6 +114,10 @@
     <Compile Include="Parsers\VW_JSON_Parser.cs" />
     <Compile Include="Producers\VW_JSON_Producer.cs" />
     <Compile Include="Unity\GeoRefManager.cs" />
+    <Compile Include="Unity\mouseListener.cs" />
+    <Compile Include="Unity\mouseray.cs" />
+    <Compile Include="Unity\transform.cs" />
+    <Compile Include="Unity\Utilities.cs" />
     <Compile Include="VWClient.cs" />
     <Compile Include="wcsUtils.cs" />
     <Compile Include="Producers\WCS_BIL_Producer.cs" />

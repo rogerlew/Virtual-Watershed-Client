@@ -22,6 +22,8 @@ public class GeoRefManager
     // Filebased Cache entry.
     string cacheBackupEntry = "backup";
     string cacheRestoreEntry = "restore";
+    // Utilities Utilities where for art thou Utilites 
+    Utilities utilities = new Utilities();
 
     // NOTE: Some way of sorting and returning back a sorted list based on metadata
     // NOTE: On download, a GeoRef might already exist. No code has been written to handle that case other than a check.
@@ -62,18 +64,18 @@ public class GeoRefManager
         // if terrain build terrain
         if(buildType == "terrain")
         {
-
+            obj.gameObject = utilities.buildTerrain(obj.records[0]);
         }
         // else if texture build texture
         else if( buildType == "texture")
         {
-
+            // To be done 
         }
 
         // else if shape build shape
         else if( buildType == "shape")
         {
-
+            obj.gameObject = utilities.buildShape(obj.records[0]);
         }
     }
 
@@ -113,7 +115,7 @@ public class GeoRefManager
         {
             foreach (var i in stored)
             {
-                foreach (var j in i.Value.recs)
+                foreach (var j in i.Value.records)
                 {
                     count++;
                     georefs.Add(i.Key);
@@ -128,7 +130,7 @@ public class GeoRefManager
         // need the metadata module here.....
         foreach (var i in stored)
         {
-            foreach(var j in i.Value.recs)
+            foreach(var j in i.Value.records)
             {
                 if(j.name == name | j.TYPE == TYPE | starttime == j.start.ToString() | endtime == j.start.ToString() | state == j.state | modelname == j.modelname )
                 {
