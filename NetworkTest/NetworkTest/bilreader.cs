@@ -100,8 +100,8 @@ public class bilreader
         }
         catch (Exception e)
         {
-            Console.WriteLine(e.Message);
-            Console.WriteLine(e.StackTrace);
+            Logger.WriteLine(e.Message);
+            Logger.WriteLine(e.StackTrace);
             Logger.Log("BILREADER: " + e.Message);
             Logger.Log("BILREADER: " + e.StackTrace);
             Logger.Log("BILREADER: " + header);

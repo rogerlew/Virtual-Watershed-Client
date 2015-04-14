@@ -55,8 +55,8 @@ class VW_JSON_Parser : Parser
             // iterating through results
             for (int records = 0; records < encoded["results"].Count; records++)
             {
-                Console.WriteLine(records);
-                //Console.ReadKey();
+                Logger.WriteLine(records.ToString());
+                //Logger.ReadKey();
                 current = null;
                 //first determine if record exists in collection to be updated or added
 
@@ -77,7 +77,7 @@ class VW_JSON_Parser : Parser
                 }
 
                 current.services["xml_fgdc"] = encoded["results"][records]["metadata"][0]["FGDC-STD-001-1998"]["xml"];
-                Console.WriteLine(current.services["xml_fgdc"]);
+                Logger.WriteLine(current.services["xml_fgdc"]);
                 var description = encoded["results"][records]["description"].ToString();
 
 
@@ -129,7 +129,7 @@ class VW_JSON_Parser : Parser
                 current.variableName = encoded["results"][records]["model_vars"].ToString().Replace('"', ' ').Trim();
 
                 current.description = description;
-                Console.WriteLine(name);
+                Logger.WriteLine(name);
 
             }
 

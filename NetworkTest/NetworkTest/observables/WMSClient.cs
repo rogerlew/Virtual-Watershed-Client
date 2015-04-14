@@ -32,13 +32,13 @@ class WMSClient : Observerable
     // Update
     public override string Update()
     {
-        Console.WriteLine("UPDATE");
+        Logger.WriteLine("UPDATE");
         Logger.Log("WMS, Token = " + Token);
 
         // Check if there is another state
         if (StateList.Count >= 1)
         {
-            Console.WriteLine(StateList[0]);
+            Logger.WriteLine(StateList[0].ToString());
 
             // Set the first state and remove from the list
             state = StateList[0];
@@ -113,7 +113,7 @@ class WMSClient : Observerable
         // Check if services contains "wms" key
         if (!records[0].services.ContainsKey("wms"))
         {
-            Console.WriteLine("RETURNING" + records[0].name);
+            Logger.WriteLine("RETURNING" + records[0].name);
 
             state = Operations.Error;
             return "";

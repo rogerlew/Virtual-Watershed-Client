@@ -82,13 +82,13 @@ public class NetworkClient : WebClient
         }
         catch(Exception e)
         {
-            Console.WriteLine(e.Message + " " + e.StackTrace);
-            Console.WriteLine("Insert Custom Error Message / Error code for handling HTTP 404");
+            Logger.WriteLine(e.Message + " " + e.StackTrace);
+            Logger.WriteLine("Insert Custom Error Message / Error code for handling HTTP 404");
             netmanager.CallDataError(Req.Url);
             StartNextDownload();
             return;
         }
-        Console.WriteLine("Completed byte download, passed to callback function.");
+        Logger.WriteLine("Completed byte download, passed to callback function.");
         //DataTracker.updateJob(Req.Url, DataTracker.Status.FINISHED);
 
         // Need some way of notifying that this download is finished --- errors,success
@@ -120,13 +120,13 @@ public class NetworkClient : WebClient
         }
         catch(Exception e)
         {
-            Console.WriteLine(e.Message + " " + e.StackTrace);
-            Console.WriteLine("Insert Custom Error Message / Error code for handling HTTP 404");
+            Logger.WriteLine(e.Message + " " + e.StackTrace);
+            Logger.WriteLine("Insert Custom Error Message / Error code for handling HTTP 404");
             netmanager.CallDataError(Req.Url);
             StartNextDownload();
             return;
         }
-        Console.WriteLine("Completed string download, passed to callback function.");
+        Logger.WriteLine("Completed string download, passed to callback function.");
 
         // Need some way of notifying that this download is finished --- errors,success
         netmanager.CallDownloadComplete(Req.Url);
@@ -139,7 +139,7 @@ public class NetworkClient : WebClient
     private static void DownloadProgressCallback(object sender, DownloadProgressChangedEventArgs e)
     {
         // Displays the operation identifier, and the transfer progress.
-        /*Console.WriteLine(
+        /*Logger.WriteLine(
             (string)e.UserState + " " + 
             e.BytesReceived + " " + 
             e.TotalBytesToReceive + " " +
@@ -155,7 +155,7 @@ public class NetworkClient : WebClient
             {
                 // Start the next one
                 DownloadRequest req = DownloadRequests.Peek();
-                Console.WriteLine("Started: " + req.Url);
+                Logger.WriteLine("Started: " + req.Url);
                 netmanager.CallDownloadStart(req.Url);
                 // Check if its a byte
                 if (req.isByte)
@@ -169,7 +169,7 @@ public class NetworkClient : WebClient
             }
             else
             { 
-                Console.WriteLine("SCARY");
+                Logger.WriteLine("SCARY");
             }
         }
     }

@@ -50,7 +50,7 @@ class WFS_GML_Parser : Parser
             }
             catch (Exception e)
             {
-                Console.WriteLine(e.Message);
+                Logger.WriteLine(e.Message);
                 // Debug.LogError(temp.Length);
             }
         }

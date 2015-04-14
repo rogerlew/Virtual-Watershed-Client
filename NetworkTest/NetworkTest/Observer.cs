@@ -13,42 +13,42 @@ public abstract class Observer
 
     public virtual void OnDownloadQueued(String url) 
     {
-        Console.WriteLine("--- In OnDownloadQueued ---");
+        Logger.WriteLine("--- In OnDownloadQueued ---");
     }
 
     public virtual void OnDownloadStart(String url)
     {
-        Console.WriteLine("--- In OnDownloadStart ---");
+        Logger.WriteLine("--- In OnDownloadStart ---");
     }
 
     public virtual void OnDownloadComplete(String url)
     {
-        Console.WriteLine("--- In OnDownloadComplete ---");
+        Logger.WriteLine("--- In OnDownloadComplete ---");
     }
 
     public virtual void OnDownloadError(String url, String message)
     {
-        Console.WriteLine("--- In OnDownloadError ---");
+        Logger.WriteLine("--- In OnDownloadError ---");
     }
 
     public virtual void OnDataStart(String url)
     {
-        Console.WriteLine("--- In OnDataStart ---");
+        Logger.WriteLine("--- In OnDataStart ---");
     }
 
     public virtual void OnDataComplete(String url)
     {
-        Console.WriteLine("--- In OnDataComplete ---");
+        Logger.WriteLine("--- In OnDataComplete ---");
     }
 
     public virtual void OnDataComplete(string Notification, List<DataRecord> record)
     {
         // For the Records!!
-        Console.WriteLine("--- In OnDataComplete ---");
+        Logger.WriteLine("--- In OnDataComplete ---");
     }
 
     public virtual void OnDataError(String url)
     {
-        Console.WriteLine("--- In OnDataError ---");
+        Logger.WriteLine("--- In OnDataError ---");
     }
 }

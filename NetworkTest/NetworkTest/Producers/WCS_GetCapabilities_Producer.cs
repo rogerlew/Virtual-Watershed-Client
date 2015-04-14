@@ -70,7 +70,7 @@ class WCS_GetCapabilities_Producer : DataProducer
         // If file does not exist 
         if (type == Transfer.Type.URL)
         {
-            Console.WriteLine("URL: " + path);
+            Logger.WriteLine("URL: " + path);
             // Beautiful Lambda here
             // Downloads the bytes and uses the ByteFunction lambda described in the passed parameter which will call the mime parser and populate the record.
             // Network Manager download

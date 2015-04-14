@@ -70,7 +70,7 @@ public class mimeparser : Parser
                         }
                         catch (Exception e)
                         {
-                            Console.WriteLine(e.Message);
+                            Logger.WriteLine(e.Message);
                         }
 
                     }
@@ -89,7 +89,7 @@ public class mimeparser : Parser
     /// <param name="record">Record passed by reference. Parsed data will be stored in here.</param>
     public override DataRecord Parse(DataRecord record, byte[] bytes)
     {
-        Console.WriteLine("HERE!!!!!!!!" + record.name);
+        Logger.WriteLine("HERE!!!!!!!!" + record.name);
         // Stopwatch
         System.Diagnostics.Stopwatch stopWatch = new System.Diagnostics.Stopwatch();
         stopWatch.Start();
@@ -146,12 +146,12 @@ public class mimeparser : Parser
         var bw = new System.IO.BinaryWriter(new System.IO.FileStream(Path+OutputName+".bil",System.IO.FileMode.Create));
         bw.Write(byteData, 0, byteData.Length);
         bw.Close();
-        Console.WriteLine("WROTE: " + Path + OutputName + ".bil");
+        Logger.WriteLine("WROTE: " + Path + OutputName + ".bil");
 
         var sw = new System.IO.StreamWriter(Path + OutputName + ".hdr");
         sw.Write(header);
         sw.Close();
-        Console.WriteLine("WROTE: " + Path + OutputName + ".hdr");
+        Logger.WriteLine("WROTE: " + Path + OutputName + ".hdr");
     }
 
 }

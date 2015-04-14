@@ -135,11 +135,11 @@ public class DataFactory
     /// Some test download functions 
     void PrintString(string str)
     {
-        Console.WriteLine(str);
+        Logger.WriteLine(str);
     }
     void PrintBytes(byte[] bytes)
     {
-        Console.WriteLine(bytes);
+        Logger.WriteLine(bytes.ToString());
     }
     public void TestByteDownload(string url)
     {

@@ -28,7 +28,7 @@ class VW_FGDC_XML_Parser : Parser
             }
             catch (System.Exception e)
             {
-                Console.WriteLine(e.Message);
+                Logger.WriteLine(e.Message);
             }
         }
         return record;

@@ -74,7 +74,7 @@ public class VWClient : Observer
 
     public override void OnDataError(string url)
     {
-        Console.WriteLine("There was an error in: " + url);
+        Logger.WriteLine("There was an error in: " + url);
         if(active.ContainsKey(url))
         {
             active.Remove(url);
@@ -97,7 +97,7 @@ public class VWClient : Observer
         {
             // Update
             string result = active[url].Update();
-            Console.WriteLine("RESULT: " + result);
+            Logger.WriteLine("RESULT: " + result);
             // Check if complete
             if (result == "COMPLETE")
             {
@@ -148,7 +148,7 @@ public class VWClient : Observer
     public void getCoverage(DataRecordSetter Setter, DataRecord Record, string crs = "", string BoundingBox = "", int Width = 0, int Height = 0, string Interpolation = "nearest", DownloadType type = DownloadType.Record, string OutputPath = "", string OutputName = "") // Parameters TODO
     {
         // Build a WCS observable
-        Console.WriteLine("GETCOVERAGE");
+        Logger.WriteLine("GETCOVERAGE");
         var client = new WCSClient(factory, type, OutputPath, OutputPath);
         client.GetData(Record, crs, BoundingBox, Width, Height, Interpolation);
         client.Token = GenerateToken("GetCoverage");
@@ -158,7 +158,7 @@ public class VWClient : Observer
 
     public void getMap(DataRecordSetter Setter, DataRecord record, int Width = 100, int Height = 100, string Format = "image/png", DownloadType type = DownloadType.Record, string OutputPath = "", string OutputName = "") // Parameters TODO
     {
-        Console.WriteLine("GetMap");
+        Logger.WriteLine("GetMap");
         // Build a WMS observable
         var client = new WMSClient(factory, type, OutputPath, OutputName);
         client.Token = GenerateToken("GetMap");

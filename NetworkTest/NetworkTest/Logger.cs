@@ -30,6 +30,23 @@ public static class Logger
         }
     }
 
+    public static void WriteLine(string line)
+    {
+#if UNITY_EDITOR
+        Debug.Log(line);
+#else
+        Console.WriteLine(line);
+#endif
+
+    }
+    
+    public static void ReadKey()
+    {
+#if !(UNITY_EDITOR)
+        Console.ReadKey();
+#endif
+    }
+
     public static void Close()
     {
         path = null;

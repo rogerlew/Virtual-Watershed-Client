@@ -29,13 +29,13 @@ class WFSClient : Observerable
     // Update
     public override string Update()
     {
-        Console.WriteLine("UPDATE");
+        Logger.WriteLine("UPDATE");
         Logger.Log("WFS, Token = " + Token);
 
         // Check if there is another state
         if (StateList.Count >= 1)
         {
-            Console.WriteLine(StateList[0]);
+            Logger.WriteLine(StateList[0].ToString());
 
             // Set the first state and remove from the list
             state = StateList[0];

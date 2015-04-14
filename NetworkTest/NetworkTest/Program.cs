@@ -25,7 +25,7 @@ namespace NetworkTest
 
         static void Recieved(List<string> message)
         {
-            Console.WriteLine("This has function has recieved: " + message.Count);
+            Logger.WriteLine("This has function has recieved: " + message.Count);
         }
 
         static void Main(string[] args)
@@ -44,7 +44,7 @@ namespace NetworkTest
 
             // This is not guranteed to give you 10 records upon request because getAvaliable has not finished yet...
             // This is for right now requests
-            Console.WriteLine("COUNT: " + grm.query(10).Count);
+            Logger.WriteLine("COUNT: " + grm.query(10).Count);
             //nm.Subscribe(obs);
             //nm.Subscribe(new LoggedObserver());
 
@@ -60,11 +60,11 @@ namespace NetworkTest
             
             //vwc.RequestRecords(DummyMethod, 10, 9);
             //t.Start();
-            //Console.WriteLine("DONE");
-            //Console.ReadKey();
-            //Console.WriteLine(recs.Count);
-            //Console.WriteLine("DONE 2!");
-            Console.ReadKey();
+            //Logger.WriteLine("DONE");
+            //Logger.ReadKey();
+            //Logger.WriteLine(recs.Count);
+            //Logger.WriteLine("DONE 2!");
+            Logger.ReadKey();
             grm.OnClose();
             ////FileBasedCache.Clear();
             ////t.Suspend();
@@ -93,7 +93,7 @@ namespace NetworkTest
             List<DataRecord> RecordsList = new List<DataRecord>();
             foreach (var i in Records)
             {
-                Console.WriteLine("NAME: " + i.name);
+                Logger.WriteLine("NAME: " + i.name);
                 RecordsList.Add(i);
 
                 List<DataRecord> temp = new List<DataRecord>();
@@ -120,7 +120,7 @@ namespace NetworkTest
                     }
                 }
                 FileBasedCache.Clear();
-                Console.WriteLine("CACHE CLEARED");
+                Logger.WriteLine("CACHE CLEARED");
             }
             catch(Exception e)
             {
@@ -136,7 +136,7 @@ namespace NetworkTest
             }
 
             FileBasedCache.Insert<List<DataRecord>>("RECORD", RecordsList);
-            Console.WriteLine("RECORDS LOADED TO CACHE");
+            Logger.WriteLine("RECORDS LOADED TO CACHE");
 
             // ================================================
             // END OF TEST
@@ -146,10 +146,10 @@ namespace NetworkTest
 
         static void PrintMetaData(List<DataRecord> Records)
         {
-            Console.WriteLine("METADATA");
+            Logger.WriteLine("METADATA");
             foreach (var i in Records)
             {
-                Console.WriteLine(i.metaData);
+                Logger.WriteLine(i.metaData.ToString());
             }
 
         }
@@ -186,7 +186,7 @@ namespace NetworkTest
 
         static void download()
         {  
-            Console.WriteLine("Hello from another thread");
+            Logger.WriteLine("Hello from another thread");
         }
 
         public static void foo(string index, List<DataRecord> RecordsList)
@@ -231,14 +231,14 @@ namespace NetworkTest
         {
             while(tfunctflag == false)
             {
-                //Console.WriteLine("LINE");
+                //Logger.WriteLine("LINE");
             }
             if(recs != null)
             foreach(var i in recs)
             {
-                Console.Write(i.texture);
+                Logger.WriteLine(i.texture.ToString());
             }
-            Console.WriteLine("COMPLETENESSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS!");
+            Logger.WriteLine("COMPLETENESSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS!");
         }
     }
 }

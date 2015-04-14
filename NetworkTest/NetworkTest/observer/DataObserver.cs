@@ -15,8 +15,8 @@ class DataObserver : Observer
     {
         base.OnDataComplete(Notification, record);
         // Send Data out to people who are waiting on Data.
-        Console.WriteLine("COUNT: " + record.Count);
-        Console.WriteLine(Notification);
+        Logger.WriteLine("COUNT: " + record.Count);
+        Logger.WriteLine(Notification);
         if(Records.ContainsKey(Notification))
         {
             Records[Notification](record);

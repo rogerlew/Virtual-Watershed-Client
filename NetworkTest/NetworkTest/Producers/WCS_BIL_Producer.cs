@@ -80,7 +80,7 @@ public class WCS_BIL_Producer : DataProducer
             // Beautiful Lambda here
             // Downloads the bytes and uses the ByteFunction lambda described in the passed parameter which will call the mime parser and populate the record.
             // Network Manager download
-            Console.WriteLine("URL: " + Path);
+            Logger.WriteLine("URL: " + Path);
             nm.AddDownload(new DownloadRequest(Path, (ByteFunction)((DownloadBytes) => parser.Parse(outputPath,outputName,DownloadBytes))));
         }
 

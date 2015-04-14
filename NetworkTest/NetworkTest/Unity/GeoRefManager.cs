@@ -33,7 +33,7 @@ public class GeoRefManager
         // Load up cache?
         if(FileBasedCache.Exists(cacheRestoreEntry))
         {
-            Console.WriteLine("Restoring Previous Session");
+            Logger.WriteLine("Restoring Previous Session");
             stored = FileBasedCache.Get<Dictionary<string, GeoReference>>(cacheRestoreEntry);
         }
 
@@ -170,7 +170,7 @@ public class GeoRefManager
             }
             else
             {
-                Console.WriteLine("ADDED");
+                Logger.WriteLine("ADDED");
                 // Add the record
                 stored.Add(rec.name + rec.id,
                     new GeoReference(rec));

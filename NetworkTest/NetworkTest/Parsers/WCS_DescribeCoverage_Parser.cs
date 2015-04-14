@@ -47,7 +47,7 @@ class WCS_DescribeCoverage_Parser :Parser
 
     public void parseDescribeCoverage(DataRecord Record, string Str)
     {
-        Console.WriteLine(Str);
+        Logger.WriteLine(Str);
         var reader = System.Xml.XmlTextReader.Create(new System.IO.StringReader(Str));
 
         XmlSerializer serial = new XmlSerializer(typeof(DescribeCoverageWCS.CoverageDescriptions));
@@ -95,15 +95,15 @@ class WCS_DescribeCoverage_Parser :Parser
 
     public override DataRecord Parse(DataRecord record, string Contents)
     {
-        Console.WriteLine("AFAFAFAFAF");
+        Logger.WriteLine("AFAFAFAFAF");
         try
         {
             parseDescribeCoverage(record, Contents);
         }
         catch(Exception e)
         {
-            Console.WriteLine(e.Message);
-            Console.WriteLine(e.StackTrace);
+            Logger.WriteLine(e.Message);
+            Logger.WriteLine(e.StackTrace);
         }
         return record;
     }

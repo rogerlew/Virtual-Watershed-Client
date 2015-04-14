@@ -23,8 +23,8 @@ class WMS_PNG_Producer : DataProducer
     // We should define this somewhere else for other functions to use.
     void SetTexture(DataRecord Record,byte[] bytes)
     {
-        Console.WriteLine("TEXTURE: " + bytes);
-        //Console.ReadKey();
+        Logger.WriteLine("TEXTURE: " + bytes);
+        //Logger.ReadKey();
         Record.texture = bytes;
     }
 
@@ -35,7 +35,7 @@ class WMS_PNG_Producer : DataProducer
         var bw = new System.IO.BinaryWriter(new System.IO.FileStream(OutputPath + OutputName + ".png", System.IO.FileMode.Create));
         bw.Write(byteData, 0, byteData.Length);
         bw.Close();
-        Console.WriteLine("WROTE: " + OutputPath + OutputName + ".png");
+        Logger.WriteLine("WROTE: " + OutputPath + OutputName + ".png");
     }
 
     ///////////////////////////////////////////////////////////////////////////
@@ -92,7 +92,7 @@ class WMS_PNG_Producer : DataProducer
         // If file does not exist 
         if (type == Transfer.Type.URL)
         {
-            Console.WriteLine("URL: " + path);
+            Logger.WriteLine("URL: " + path);
             // Beautiful Lambda here
             // Downloads the bytes and uses the ByteFunction lambda described in the passed parameter which will call the mime parser and populate the record.
             // Network Manager download
