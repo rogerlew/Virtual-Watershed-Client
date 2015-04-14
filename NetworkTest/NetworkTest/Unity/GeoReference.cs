@@ -5,16 +5,26 @@ using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
 
+[Serializable]
 public class GeoReference
 {
     // Fields
     String type;
-    List<DataRecord> recs;
+    public List<DataRecord> recs;
+
+    // We will have to rebuild this or come up with a different serialization mechanism -- Unity's Serializer
+    [NonSerializedAttribute]
     GameObject obj;
+    [NonSerializedAttribute]
     Texture2D texture;
+
     private DataRecord rec;
 
     // Constructor
+    public GeoReference()
+    {
+
+    }
     public GeoReference(string refType)
     {
         type = refType;
@@ -22,6 +32,10 @@ public class GeoReference
 
     public GeoReference(DataRecord rec)
     {
+        if(recs == null)
+        {
+            recs = new List<DataRecord>();
+        }
         recs.Add(rec);
     }
 

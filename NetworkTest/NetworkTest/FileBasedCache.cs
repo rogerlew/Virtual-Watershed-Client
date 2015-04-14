@@ -11,6 +11,7 @@ using System.IO;
 /// </summary>
 public static class FileBasedCache
 {
+    private static readonly object _Padlock = new object();
     static Dictionary<string, string> _FileMap;
     const string MAPFILENAME = "FileBasedCacheMAP.dat";
     public static string DirectoryLocation = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
@@ -74,17 +75,20 @@ public static class FileBasedCache
     public static void Insert<T>(string key, T value)
     {
         //if the key is already in use, overwrite its corresponding value
-        if (_FileMap.ContainsKey(key))
+        lock (_Padlock)
         {
-            SerializeToBin(value, _FileMap[key]);
+            if (_FileMap.ContainsKey(key))
+            {
+                SerializeToBin(value, _FileMap[key]);
+            }
+            //else, add a new entry to the cache
+            else
+            {
+                _FileMap.Add(key, GetNewFileName);
+                SerializeToBin(value, _FileMap[key]);
+            }
+            SerializeToBin(_FileMap, MyMapFileName);
         }
-        //else, add a new entry to the cache
-        else
-        {
-            _FileMap.Add(key, GetNewFileName);
-            SerializeToBin(value, _FileMap[key]);
-        }
-        SerializeToBin(_FileMap, MyMapFileName);
     }
 
     /// <summary>

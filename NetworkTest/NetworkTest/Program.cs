@@ -21,38 +21,71 @@ namespace NetworkTest
         static String VWPString = "http://vwp-dev.unm.edu/";
         static VWClient vwc;
         static DataObserver obs;
+        static GeoRefManager grm = new GeoRefManager(vwc);
+
+        static void Recieved(List<string> message)
+        {
+            Console.WriteLine("This has function has recieved: " + message.Count);
+        }
+
         static void Main(string[] args)
         {
+
+            //FileBasedCache.Clear();
             NetworkManager nm = new NetworkManager();
-            obs = new DataObserver();
+            //obs = new DataObserver();
             vwc = new VWClient(new DataFactory(nm), nm);
+            grm = new GeoRefManager(vwc);
+            grm.Start();
             nm.Subscribe(vwc);
-            nm.Subscribe(obs);
-            nm.Subscribe(new LoggedObserver());
 
-            Logger.SetPath(".\\log.txt");
-            Logger.Log("Scooby Dooby Dooo!");
+            grm.getAvailable(0, 15,Message: Recieved);
+            Thread.Sleep(1000);
 
-            //vwc.RequestRecords(PrintDataRecords, 0, 50);
-            //vwc.RequestRecords(null,0, 1000);
+            // This is not guranteed to give you 10 records upon request because getAvaliable has not finished yet...
+            // This is for right now requests
+            Console.WriteLine("COUNT: " + grm.query(10).Count);
+            //nm.Subscribe(obs);
+            //nm.Subscribe(new LoggedObserver());
 
-            vwc.RequestRecords(DummyMethod, 0, 10);
+            //Logger.SetPath(".\\log.txt");
+            //Logger.Log("Scooby Dooby Dooo!");
+
+            ////vwc.RequestRecords(PrintDataRecords, 0, 50);
+            ////vwc.RequestRecords(null,0, 1000);
+
+            //vwc.RequestRecords(DummyMethod, 0, 9);
             
-            Thread t = new Thread( () => tFunct(recs) );
-
-            vwc.RequestRecords(DummyMethod, 0, 9);
-
-            Console.WriteLine("DONE");
+            //Thread t = new Thread( () => tFunct(recs) );
+            
+            //vwc.RequestRecords(DummyMethod, 10, 9);
+            //t.Start();
+            //Console.WriteLine("DONE");
+            //Console.ReadKey();
+            //Console.WriteLine(recs.Count);
+            //Console.WriteLine("DONE 2!");
             Console.ReadKey();
-            Logger.Close();
+            grm.OnClose();
+            ////FileBasedCache.Clear();
+            ////t.Suspend();
+            //Logger.Close();
         }
 
         public static int i = 1;
         public static List<DataRecord> recs;
         public static void DummyMethod(List<DataRecord> result)
         {
-            if (i == 1) { recs = result; i++; foo("INDEX", result); }
-            else foo("INDEX", result);
+            if (i == 1)
+            {
+                recs = result; i++;
+                //result[0]
+                foo("INDEX", result);
+                vwc.getMap(GetMap, result[2]);
+            }
+            else
+            {
+                foo("INDEX", result);
+            }
         }
         
         static void PrintDataRecords(List<DataRecord> Records)
@@ -177,11 +210,12 @@ namespace NetworkTest
                     else
                     {
                         Logger.Log("Record " + i + " is NOT equal!");
-                        tfunctflag = true;
+                        
 
                         // Decide which one is more up to data OR has more records
                         RecordsList.Clear();
                         RecordsList.AddRange(cachedRecords);
+                        tfunctflag = true;
                     }
                 }
             }
@@ -197,9 +231,14 @@ namespace NetworkTest
         {
             while(tfunctflag == false)
             {
-                
+                //Console.WriteLine("LINE");
             }
-            Console.WriteLine("COMPLETE");
+            if(recs != null)
+            foreach(var i in recs)
+            {
+                Console.Write(i.texture);
+            }
+            Console.WriteLine("COMPLETENESSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS!");
         }
     }
 }

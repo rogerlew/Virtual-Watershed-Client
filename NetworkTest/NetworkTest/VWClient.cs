@@ -78,8 +78,11 @@ public class VWClient : Observer
         if(active.ContainsKey(url))
         {
             active.Remove(url);
-            var job = waiting.Dequeue();
-            AddObservable(job);
+            if (waiting.Count > 0)
+            {
+                var job = waiting.Dequeue();
+                AddObservable(job);
+            }
 
             // Send second error message to notify other observers there was an error with obtaining the data record?
 
