@@ -73,6 +73,13 @@ public class DataRecord
                a.data != b.data;
     }
 
+    // Copy Function: overwrited current data with data in src
+    public bool copyFrom(DataRecord src)
+    {
+        // TODO
+        return false;
+    }
+
     /** These fields are necessary for generating the key used in datamanager datastructure. 
      *
      */

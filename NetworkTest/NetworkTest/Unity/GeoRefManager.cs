@@ -16,9 +16,14 @@ public class GeoRefManager
 {
     // Fields
     VWClient client;
-    Dictionary<string, GeoReference> stored = new Dictionary<string, GeoReference>();
-    
+    Dictionary<string, GeoReference> storedGeoRefs = new Dictionary<string, GeoReference>();
 
+    // TODO When a georef added, check which model run it belongs to and save the model run here
+    // Questions that need to be answered: 
+    // Should we have an addModelRun() function? (And then just check the string field of the GeoRef to know which ModelRun it belongs to)
+    // Should ModelRuns (a reference to) be stored in GeoRefs? (This will create a cycle of references GeoRef_1 -> ModelRun -> GeoRef_1
+    Dictionary<string, ModelRun> storedModelRuns = new Dictionary<string, ModelRun>();
+    
     // Filebased Cache entry.
     string cacheBackupEntry = "backup";
     string cacheRestoreEntry = "restore";
@@ -34,7 +39,7 @@ public class GeoRefManager
         if(FileBasedCache.Exists(cacheRestoreEntry))
         {
             Logger.WriteLine("Restoring Previous Session");
-            stored = FileBasedCache.Get<Dictionary<string, GeoReference>>(cacheRestoreEntry);
+            storedGeoRefs = FileBasedCache.Get<Dictionary<string, GeoReference>>(cacheRestoreEntry);
         }
 
         // Initialize everything.....
@@ -50,14 +55,14 @@ public class GeoRefManager
     // Methods
     public GeoReference request(string key)
     {
-        return stored[key];
+        return storedGeoRefs[key];
     }
 
     public void buildObject(string recordname,string buildType="")
     {
         // TODO
         // We need the utilities class here. -- This is in the Unity code right now...
-        GeoReference obj = stored[recordname];
+        GeoReference obj = storedGeoRefs[recordname];
         
         // We need to use this obj to determine what to build.
 
@@ -116,7 +121,7 @@ public class GeoRefManager
         int count = 0;
         if(number != 0)
         {
-            foreach (var i in stored)
+            foreach (var i in storedGeoRefs)
             {
                 foreach (var j in i.Value.records)
                 {
@@ -131,7 +136,7 @@ public class GeoRefManager
             }
         }
         // need the metadata module here.....
-        foreach (var i in stored)
+        foreach (var i in storedGeoRefs)
         {
             foreach(var j in i.Value.records)
             {
@@ -159,7 +164,7 @@ public class GeoRefManager
         List<string> RecievedRefs = new List<string>();
         foreach(DataRecord rec in Records)
         {
-            if( stored.ContainsKey(rec.name + rec.id) )
+            if( storedGeoRefs.ContainsKey(rec.name + rec.id) )
             {
                 // GeoRef already exists! Do something about it!
                 // Ignore for now
@@ -175,13 +180,13 @@ public class GeoRefManager
             {
                 Logger.WriteLine("ADDED");
                 // Add the record
-                stored.Add(rec.name + rec.id,
+                storedGeoRefs.Add(rec.name + rec.id,
                     new GeoReference(rec));
                 RecievedRefs.Add(rec.name + rec.id);
 
                 // Should we write a class that keeps a record of everything in the cache at the moment -- so we don't have to do constant file I/O...
                 // This class would act like a sudo in-memory cache for both standalone and web player. 
-                FileBasedCache.Insert<GeoReference>(rec.name + rec.id, stored[rec.name + rec.id]);
+                FileBasedCache.Insert<GeoReference>(rec.name + rec.id, storedGeoRefs[rec.name + rec.id]);
             }
         }
         if(message != null)
@@ -193,7 +198,7 @@ public class GeoRefManager
     public void OnClose()
     {
         // Save things to cache
-        FileBasedCache.Insert<Dictionary<string, GeoReference>>(cacheRestoreEntry, stored);
+        FileBasedCache.Insert<Dictionary<string, GeoReference>>(cacheRestoreEntry, storedGeoRefs);
         // or should we clear the cache!!!!!
     }
 

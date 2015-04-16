@@ -20,10 +20,9 @@ public class GeoReference
     private DataRecord rec;
 
     // Constructor
-    public GeoReference()
-    {
+    public GeoReference() {}
 
-    }
+    // Possible types: modelrun, texture, terrain
     public GeoReference(string refType)
     {
         type = refType;
@@ -31,10 +30,7 @@ public class GeoReference
 
     public GeoReference(DataRecord rec)
     {
-        if(records == null)
-        {
-            records = new List<DataRecord>();
-        }
+        if(records == null) { records = new List<DataRecord>(); }
         records.Add(rec);
     }
 
