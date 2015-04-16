@@ -114,8 +114,10 @@
     <Compile Include="Parsers\VW_JSON_Parser.cs" />
     <Compile Include="Producers\VW_JSON_Producer.cs" />
     <Compile Include="Unity\GeoRefManager.cs" />
+    <Compile Include="Unity\ModelRun.cs" />
     <Compile Include="Unity\mouseListener.cs" />
     <Compile Include="Unity\mouseray.cs" />
+    <Compile Include="SystemParameters.cs" />
     <Compile Include="Unity\transform.cs" />
     <Compile Include="Unity\Utilities.cs" />
     <Compile Include="VWClient.cs" />

@@ -10,9 +10,9 @@ using UnityEngine;
 /// This may be replaced with a observer that notifies objects.... maybe.
 /// </summary>
 /// <param name="RecievedGeoRefs"></param>
-public delegate void georefMessage(List<string> RecievedGeoRefs);
+public delegate void GeoRefMessage(List<string> RecievedGeoRefs);
 
-public class GeoRefManager 
+public class GeoRefManager
 {
     // Fields
     VWClient client;
@@ -140,7 +140,7 @@ public class GeoRefManager
         {
             foreach(var j in i.Value.records)
             {
-                if(j.name == name | j.TYPE == TYPE | starttime == j.start.ToString() | endtime == j.start.ToString() | state == j.state | modelname == j.modelname )
+                if(j.name == name || j.TYPE == TYPE || starttime == j.start.ToString() || endtime == j.start.ToString() || state == j.state || modelname == j.modelname )
                 {
                     georefs.Add(i.Key);
                     break;
@@ -153,13 +153,13 @@ public class GeoRefManager
     }
 
     // NOTE: Build a parameter struct (name of struct = ServiceParameters)
-    public void getAvailable(SystemParameters param, georefMessage Message=null)
+    public void getAvailable(SystemParameters param, GeoRefMessage Message=null)
     {
         // TODO
         client.RequestRecords(((List<DataRecord> records) =>onGetAvailableComplete(records,Message)), param);
     }
 
-    private void onGetAvailableComplete(List<DataRecord> Records,georefMessage message)
+    private void onGetAvailableComplete(List<DataRecord> Records,GeoRefMessage message)
     {
         List<string> RecievedRefs = new List<string>();
         foreach(DataRecord rec in Records)

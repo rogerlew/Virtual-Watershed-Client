@@ -22,7 +22,7 @@ public class GeoReference
     // Constructor
     public GeoReference() {}
 
-    // Possible types: modelrun, texture, terrain
+    // Possible types: texture, terrain, shape
     public GeoReference(string refType)
     {
         type = refType;
