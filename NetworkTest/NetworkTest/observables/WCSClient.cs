@@ -68,7 +68,12 @@ class WCSClient : Observerable
         }
         else if (state == Operations.GetCoverage)
         {
-            return GetCoverage(CRS, records[0].bbox, width, height);
+            SystemParameters param = new SystemParameters();
+            param.crs = CRS;
+            param.boundingbox = records[0].bbox;
+            param.width = width;
+            param.height = height;
+            return GetCoverage(param);
         }
         else if (Operations.Done == state)
         {
@@ -80,15 +85,15 @@ class WCSClient : Observerable
     }
 
     // This guy will call GetCoverage -- This to be used with parameters that may not already exist
-    public void GetData(DataRecord Record, string crs = "", string BoundingBox = "", int Width = 0, int Height = 0, string Interpolation = "nearest")
+    public void GetData(DataRecord Record, SystemParameters param )
     {
         records = new List<DataRecord>();
         records.Add(Record);
-        CRS = crs;
-        boundingbox = BoundingBox;
-        width = Width;
-        height = Height;
-        interpolation = Interpolation;
+        CRS = param.crs;
+        boundingbox = param.boundingbox;
+        width = param.width;
+        height = param.height;
+        interpolation = param.interpolation;
     }
 
     public override void CallBack()
@@ -102,7 +107,8 @@ class WCSClient : Observerable
         state = Operations.Error;
     }
 
-    private string GetCoverage(string crs = "", string boundingbox = "", int width = 0, int height = 0, string interpolation = "nearest")
+    //private string GetCoverage(string crs = "", string boundingbox = "", int width = 0, int height = 0, string interpolation = "nearest")
+    private string GetCoverage(SystemParameters param)
     {
         // By this point the get coverage string should be built.
         GetCapabilites.OperationsMetadataOperation gc = new GetCapabilites.OperationsMetadataOperation();

@@ -145,37 +145,40 @@ public class VWClient : Observer
         }
     }
 
-    public void getCoverage(DataRecordSetter Setter, DataRecord Record, string crs = "", string BoundingBox = "", int Width = 0, int Height = 0, string Interpolation = "nearest", DownloadType type = DownloadType.Record, string OutputPath = "", string OutputName = "") // Parameters TODO
+    //public void getCoverage(DataRecordSetter Setter, DataRecord Record, string crs = "", string BoundingBox = "", int Width = 0, int Height = 0, string Interpolation = "nearest", DownloadType type = DownloadType.Record, string OutputPath = "", string OutputName = "") // Parameters TODO
+    public void getCoverage(DataRecordSetter Setter, DataRecord Record, SystemParameters param)
     {
         // Build a WCS observable
         Logger.WriteLine("GETCOVERAGE");
-        var client = new WCSClient(factory, type, OutputPath, OutputPath);
-        client.GetData(Record, crs, BoundingBox, Width, Height, Interpolation);
+        var client = new WCSClient(factory, param.type, param.outputPath, param.outputPath);
+        client.GetData(Record, param);
         client.Token = GenerateToken("GetCoverage");
         client.callback = Setter;
         AddObservable(client);
     }
 
-    public void getMap(DataRecordSetter Setter, DataRecord record, int Width = 100, int Height = 100, string Format = "image/png", DownloadType type = DownloadType.Record, string OutputPath = "", string OutputName = "") // Parameters TODO
+    //public void getMap(DataRecordSetter Setter, DataRecord record, int Width = 100, int Height = 100, string Format = "image/png", DownloadType type = DownloadType.Record, string OutputPath = "", string OutputName = "") // Parameters TODO
+    public void getMap(DataRecordSetter Setter, DataRecord Record, SystemParameters param)
     {
         Logger.WriteLine("GetMap");
         // Build a WMS observable
-        var client = new WMSClient(factory, type, OutputPath, OutputName);
+        var client = new WMSClient(factory, param.type, param.outputPath, param.outputName);
         client.Token = GenerateToken("GetMap");
         client.App = App;
         client.Root = Root;
-        client.GetData(record, Width, Height, Format);
+        client.GetData(Record, param);
         client.callback = Setter;
         AddObservable(client);
     }
 
-    public void getFeatures(DataRecordSetter Setter, DataRecord record, string Version = "1.0.0", DownloadType type = DownloadType.Record, string OutputPath = "", string OutputName = "") // Parameters TODO
+    //public void getFeatures(DataRecordSetter Setter, DataRecord record, string Version = "1.0.0", DownloadType type = DownloadType.Record, string OutputPath = "", string OutputName = "") // Parameters TODO
+    public void getFeatures(DataRecordSetter Setter, DataRecord Record, SystemParameters param)
     {
         // Build a WFS observable
-        var client = new WFSClient(factory, type, OutputPath, OutputName);
+        var client = new WFSClient(factory, param.type, param.outputPath, param.outputName);
         client.App = App;
         client.Root = Root;
-        client.GetData(record, Version);
+        client.GetData(Record, param);
         client.Token = GenerateToken("GetFeature");
         client.callback = Setter;
         AddObservable(client);
@@ -186,50 +189,49 @@ public class VWClient : Observer
         return Threads.Count() != 0;
     }
 
-
-    public string RequestRecords(DataRecordSetter Setter, int offset, int limit, string model_set_type = "vis", string service = "", string query = "", string starttime = "", string endtime = "", string location = "", string state = "", string modelname = "", string timestamp_start = "", string timestamp_end = "", string model_vars = "", DownloadType type = DownloadType.Record, string OutputPath = "", string OutputName = "")
+    public string RequestRecords(DataRecordSetter Setter, SystemParameters param)
     {
         List<DataRecord> Records = new List<DataRecord>();
 
         // Make a request to the root html service. -- Need to pass in a call back function...
-        string req = Root + App + "/search/datasets.json" + "?offset=" + offset + "&model_set_type=" + model_set_type + "&limit=" + limit + "&version=3";
-        if (starttime != "" && endtime != "")
+        string req = Root + App + "/search/datasets.json" + "?offset=" + param.offset + "&model_set_type=" + param.model_set_type + "&limit=" + param.limit + "&version=3";
+        if (param.starttime != "" && param.endtime != "")
         {
-            req += "&startime=" + starttime + "&endtime=" + endtime;
+            req += "&startime=" + param.starttime + "&endtime=" + param.endtime;
         }
-        if (query != "")
+        if (param.query != "")
         {
-            req += "&query=" + query;
+            req += "&query=" + param.query;
         }
-        if (location != "")
+        if (param.location != "")
         {
-            req += "&location=" + location;
+            req += "&location=" + param.location;
         }
-        if (modelname != "")
+        if (param.modelname != "")
         {
-            req += "&modelname=" + modelname;
+            req += "&modelname=" + param.modelname;
         }
-        if (state != "")
+        if (param.state != "")
         {
-            req += "&state=" + state;
+            req += "&state=" + param.state;
         }
-        if (timestamp_start != "")
+        if (param.timestamp_start != "")
         {
-            req += "&timestamp_start=" + timestamp_start;
+            req += "&timestamp_start=" + param.timestamp_start;
         }
-        if (timestamp_end != "")
+        if (param.timestamp_end != "")
         {
-            req += "&timestamp_end=" + timestamp_end;
+            req += "&timestamp_end=" + param.timestamp_end;
         }
-        if (model_vars != "")
+        if (param.model_vars != "")
         {
-            req += "&model_vars=" + model_vars;
+            req += "&model_vars=" + param.model_vars;
         }
             
         // Make the request and enqueue it...
         // Request Download -- 
         //DataRecordJob Job = new DataRecordJob();
-        var Obs = new GenericObservable(factory, type, OutputPath, OutputName);
+        var Obs = new GenericObservable(factory, param.type, param.outputPath, param.outputName);
         Obs.callback = Setter;
         Obs.Token = GenerateToken("RequestRecords");
         Obs.Request(Records, DownloadRecords2, req);

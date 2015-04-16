@@ -86,17 +86,20 @@ public class GeoRefManager
         // TODO 
         if(service== "vwc")
         {
+            SystemParameters param = new SystemParameters();
             if(operation=="wms")
             {
-                client.getMap(SettingTheRecord,records[0]);
+                param.width = 100;
+                param.height = 100;
+                client.getMap(SettingTheRecord,records[0], param);
             }
             else if(operation=="wcs")
             {
-                client.getCoverage(SettingTheRecord,records[0]);
+                client.getCoverage(SettingTheRecord,records[0], param);
             }
             else if(operation=="wfs")
             {
-                client.getFeatures(SettingTheRecord,records[0]);
+                client.getFeatures(SettingTheRecord,records[0], param);
             }
             else if(operation=="fgdc")
             {
@@ -145,10 +148,10 @@ public class GeoRefManager
     }
 
     // NOTE: Build a parameter struct (name of struct = ServiceParameters)
-    public void getAvailable(int offset, int limit, string model_set_type = "vis", string service = "", string query = "", string starttime = "", string endtime = "", string location = "", string state = "", string modelname = "", string timestamp_start = "", string timestamp_end = "", string model_vars = "", DownloadType type = DownloadType.Record, string OutputPath = "", string OutputName = "", georefMessage Message=null)
+    public void getAvailable(SystemParameters param, georefMessage Message=null)
     {
         // TODO
-        client.RequestRecords(((List<DataRecord> records) =>onGetAvailableComplete(records,Message)), offset, limit, model_set_type, service, query, starttime, endtime, location, state, modelname, timestamp_start, timestamp_end, model_vars, type, OutputPath, OutputName);
+        client.RequestRecords(((List<DataRecord> records) =>onGetAvailableComplete(records,Message)), param);
     }
 
     private void onGetAvailableComplete(List<DataRecord> Records,georefMessage message)

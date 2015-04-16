@@ -64,11 +64,11 @@ class WFSClient : Observerable
         return "";
     }
 
-    public void GetData(DataRecord Record, string Version = "1.0.0")
+    public void GetData(DataRecord Record, SystemParameters param)
     {
         records = new List<DataRecord>();
         records.Add(Record);
-        version = Version;
+        version = param.version;
     }
 
     public override void Error()

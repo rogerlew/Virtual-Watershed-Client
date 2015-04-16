@@ -67,14 +67,14 @@ class WMSClient : Observerable
         return "";
     }
 
-    public void GetData(DataRecord Record, int Width=100, int Height=100, string Format = "image/png")
+    public void GetData(DataRecord Record, SystemParameters param)
     {
         // Set the data
         records = new List<DataRecord>();
         records.Add(Record);
-        width = Width;
-        height = Height;
-        format = Format;
+        width = param.width;
+        height = param.height;
+        format = param.format;
     }
 
     public override void CallBack()
