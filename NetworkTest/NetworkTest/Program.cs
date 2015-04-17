@@ -38,8 +38,11 @@ namespace NetworkTest
             grm = new GeoRefManager(vwc);
             grm.Start();
             nm.Subscribe(vwc);
-
-            grm.getAvailable(0, 15,Message: Recieved);
+            SystemParameters sp = new SystemParameters();
+            sp.offset = 0;
+            sp.limit = 200;
+            sp.model_set_type = "";
+            grm.getAvailable(sp,Message: Recieved);
             Thread.Sleep(1000);
 
             // This is not guranteed to give you 10 records upon request because getAvaliable has not finished yet...
@@ -80,7 +83,7 @@ namespace NetworkTest
                 recs = result; i++;
                 //result[0]
                 foo("INDEX", result);
-                vwc.getMap(GetMap, result[2]);
+                //vwc.getMap(GetMap, result[2]);
             }
             else
             {
@@ -130,9 +133,9 @@ namespace NetworkTest
             // if all is well this should work
             foreach(var i in RecordsList)
             {
-                vwc.getMap(GetMap, i,type:DownloadType.File,OutputPath: "./", OutputName: i.name);
-                vwc.getCoverage(GetCoverage, i);
-                vwc.getFeatures(GetFeature, i);
+               // vwc.getMap(GetMap, i,type:DownloadType.File,OutputPath: "./", OutputName: i.name);
+                //vwc.getCoverage(GetCoverage, i);
+               // vwc.getFeatures(GetFeature, i);
             }
 
             FileBasedCache.Insert<List<DataRecord>>("RECORD", RecordsList);

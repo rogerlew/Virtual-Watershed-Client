@@ -93,7 +93,8 @@ class VW_JSON_Parser : Parser
                 current.modelname = encoded["results"][records]["categories"][0]["modelname"].ToString().Replace('"', ' ').Trim();
                 current.state = encoded["results"][records]["categories"][0]["state"].ToString().Replace('"', ' ').Trim();
                 current.location = encoded["results"][records]["categories"][0]["location"].ToString().Replace('"', ' ').Trim();
-                if (current.modelname == "isnobal")
+
+                if (current.modelname == "isnobal" || encoded["results"]["valid_dates"] != null)
                 {
                     current.start = getDateTime(encoded["results"][records]["valid_dates"]["start"].ToString().Replace('"', ' ').Trim());
                     current.end = getDateTime(encoded["results"][records]["valid_dates"]["end"].ToString().Replace('"', ' ').Trim());
@@ -108,17 +109,18 @@ class VW_JSON_Parser : Parser
                 var services_to_replace = encoded["results"][records]["services"].ToString();
                 var replaced = services_to_replace.Replace("{", String.Empty).Replace("[", "{").Replace("}", String.Empty).Replace("]", "}");
                 var services = SimpleJSON.JSONNode.Parse(replaced);
-                
-                // Get ogcservices links
-                if(services["wms"] != null)
-                current.services["wms"] = services["wms"];
+                if (services != null)
+                {
+                    // Get ogcservices links
+                    if (services["wms"] != null)
+                        current.services["wms"] = services["wms"];
 
-                if (services["wcs"] != null)
-                    current.services["wcs"] = services["wcs"];
+                    if (services["wcs"] != null)
+                        current.services["wcs"] = services["wcs"];
 
-                if (services["wfs"] != null)
-                    current.services["wfs"] = services["wfs"];
-
+                    if (services["wfs"] != null)
+                        current.services["wfs"] = services["wfs"];
+                }
 
                 // Populate datarecord here.
                 current.projection = "epsg:" + projection.ToString();

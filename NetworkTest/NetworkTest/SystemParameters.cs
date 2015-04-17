@@ -3,8 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-struct SystemParameters
+public class SystemParameters
 {
+    public SystemParameters()
+    {
+
+    }
     public int offset = 0;
     public int limit = 15;
     public int width = 0;

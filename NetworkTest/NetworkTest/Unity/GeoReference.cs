@@ -9,7 +9,7 @@ public class GeoReference
 {
     // Fields
     String type;
-    public List<DataRecord> records;
+    public List<DataRecord> records = new List<DataRecord>();
 
     // We will have to rebuild this or come up with a different serialization mechanism -- Unity's Serializer
     [NonSerializedAttribute]

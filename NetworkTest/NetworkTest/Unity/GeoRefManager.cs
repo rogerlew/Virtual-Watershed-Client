@@ -24,6 +24,7 @@ public class GeoRefManager
     // Should ModelRuns (a reference to) be stored in GeoRefs? (This will create a cycle of references GeoRef_1 -> ModelRun -> GeoRef_1
     Dictionary<string, ModelRun> storedModelRuns = new Dictionary<string, ModelRun>();
     
+
     // Filebased Cache entry.
     string cacheBackupEntry = "backup";
     string cacheRestoreEntry = "restore";
@@ -158,41 +159,52 @@ public class GeoRefManager
         // TODO
         client.RequestRecords(((List<DataRecord> records) =>onGetAvailableComplete(records,Message)), param);
     }
-
+    /// <summary>
+    /// This needs to be tested.
+    /// </summary>
+    /// <param name="Records"></param>
+    /// <param name="message"></param>
     private void onGetAvailableComplete(List<DataRecord> Records,GeoRefMessage message)
     {
         List<string> RecievedRefs = new List<string>();
         foreach(DataRecord rec in Records)
         {
-            if( storedGeoRefs.ContainsKey(rec.name + rec.id) )
+            Logger.WriteLine(rec.modelRunUUID);
+            // We should play with the other of the if statements...
+            // Normal Case
+            if(storedModelRuns.ContainsKey(rec.modelRunUUID))
             {
-                // GeoRef already exists! Do something about it!
-                // Ignore for now
-                continue;
-            }
-            else if(FileBasedCache.Exists(rec.name + rec.id))
-            {
-                // overwrite or ignore
-                continue;
-                //stored[rec.name + rec.id] = FileBasedCache.Get<GeoReference>(rec.name + rec.id));
-            }
-            else
-            {
+                // Call insert operation
                 Logger.WriteLine("ADDED");
-                // Add the record
-                storedGeoRefs.Add(rec.name + rec.id,
-                    new GeoReference(rec));
-                RecievedRefs.Add(rec.name + rec.id);
-
-                // Should we write a class that keeps a record of everything in the cache at the moment -- so we don't have to do constant file I/O...
-                // This class would act like a sudo in-memory cache for both standalone and web player. 
-                FileBasedCache.Insert<GeoReference>(rec.name + rec.id, storedGeoRefs[rec.name + rec.id]);
+                storedModelRuns[rec.modelRunUUID].Insert(rec);
             }
+            // Cache Case
+            else if(FileBasedCache.Exists(rec.modelRunUUID))
+            {
+                // Handle it
+            }
+            // Normal Case
+            else if(!storedModelRuns.ContainsKey(rec.modelRunUUID))
+            {
+                // Cache Case -- Check if cache has a georef
+
+                // Normal Case -- Insert it into storedModelRuns
+                Logger.WriteLine("ADDED");
+                storedModelRuns.Add(rec.modelRunUUID,new ModelRun(rec.modelname,rec.modelRunUUID));
+
+                // Call the insert
+                storedModelRuns[rec.modelRunUUID].Insert(rec);
+            }
+        }
+        foreach(var i in storedModelRuns)
+        {
+            Logger.WriteLine(i.Value.Count().ToString());
         }
         if(message != null)
         {
             message(RecievedRefs);
         }
+        Logger.WriteLine("CREATED THIS MANY MODEL RUNS: " + storedModelRuns.Count);
     }
 
     public void OnClose()
