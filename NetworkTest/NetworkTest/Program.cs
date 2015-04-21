@@ -21,7 +21,7 @@ namespace NetworkTest
         static String VWPString = "http://vwp-dev.unm.edu/";
         static VWClient vwc;
         static DataObserver obs;
-        static GeoRefManager grm;
+        static ModelRunManager grm;
 
         static void Recieved(List<string> message)
         {
@@ -37,7 +37,7 @@ namespace NetworkTest
             NetworkManager nm = new NetworkManager();
             //obs = new DataObserver();
             vwc = new VWClient(new DataFactory(nm), nm);
-            grm = new GeoRefManager(vwc);
+            grm = new ModelRunManager(vwc);
             grm.Start();
             nm.Subscribe(vwc);
             SystemParameters sp = new SystemParameters();
@@ -49,7 +49,7 @@ namespace NetworkTest
 
             // This is not guranteed to give you 10 records upon request because getAvaliable has not finished yet...
             // This is for right now requests
-            Logger.WriteLine("COUNT: " + grm.query(10).Count);
+            Logger.WriteLine("COUNT: " + grm.Query(10).Count);
             //nm.Subscribe(obs);
             //nm.Subscribe(new LoggedObserver());
 

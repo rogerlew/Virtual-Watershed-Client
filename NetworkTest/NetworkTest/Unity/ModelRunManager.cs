@@ -12,19 +12,21 @@ using UnityEngine;
 /// <param name="RecievedGeoRefs"></param>
 public delegate void GeoRefMessage(List<string> RecievedGeoRefs);
 
-public class GeoRefManager
+public class ModelRunManager
 {
     // Fields
     VWClient client;
-    Dictionary<string, GeoReference> storedGeoRefs = new Dictionary<string, GeoReference>();
+
+    // Single List<DR> can be stored under a generic model run
+    // Dictionary<string, GeoReference> storedGeoRefs = new Dictionary<string, GeoReference>();
+    ModelRun generalModelRun = new ModelRun("general", ""); // Update later?
 
     // TODO When a georef added, check which model run it belongs to and save the model run here
     // Questions that need to be answered: 
     // Should ModelRuns (a reference to) be stored in GeoRefs? (This will create a cycle of references GeoRef_1 -> ModelRun -> GeoRef_1 
     // ~ Half Answered use the GeoRefManager to get the original model run
-    Dictionary<string, ModelRun> storedModelRuns = new Dictionary<string, ModelRun>();
+    Dictionary<string, ModelRun> modelRuns = new Dictionary<string, ModelRun>();
     
-
     // Filebased Cache entry.
     string cacheBackupEntry = "backup";
     string cacheRestoreEntry = "restore";
@@ -34,33 +36,30 @@ public class GeoRefManager
 
     // NOTE: Some way of sorting and returning back a sorted list based on metadata
     // NOTE: On download, a GeoRef might already exist. No code has been written to handle that case other than a check.
-
     public void Start()
     {
         // Load up cache?
         if(FileBasedCache.Exists(cacheRestoreEntry))
         {
             Logger.WriteLine("Restoring Previous Session");
-            storedGeoRefs = FileBasedCache.Get<Dictionary<string, GeoReference>>(cacheRestoreEntry);
+            
+            // Don't know how to fix
+            //storedGeoRefs = FileBasedCache.Get<Dictionary<string, GeoReference>>(cacheRestoreEntry);
         }
-
         // Initialize everything.....
-
     }
 
     // Constructors
-    public GeoRefManager(VWClient refToClient)
-    {
-        client = refToClient;
-    }
+    public ModelRunManager(VWClient refToClient) { client = refToClient; }
 
     // Methods
-    public GeoReference request(string key)
+    public ModelRun Get(string key)
     {
-        return storedGeoRefs[key];
+        return modelRuns[key];
     }
 
-    public void buildObject(string recordname,string buildType="")
+    // TODO: Needs to be moved
+    /* public void buildObject(string recordname,string buildType="")
     {
         // TODO
         // We need the utilities class here. -- This is in the Unity code right now...
@@ -84,20 +83,19 @@ public class GeoRefManager
         {
             obj.gameObject = utilities.buildShape(obj.records[0]);
         }
-    }
+    } */
 
     // NOTE: Populating the data inside a datarecord. Something like building the texture.
     // Gonna need a parameter object for this ----- for now just defaults
-    public void download(List<DataRecord> records, DataRecordSetter SettingTheRecord , string service = "vwc", string operation = "wms",SystemParameters param=null)
+    // TODO Consider Removing DataRecordSetter
+    public void Download(List<DataRecord> records, DataRecordSetter SettingTheRecord, string service = "vwc", string operation = "wms", SystemParameters param=null)
     {
-        if(param == null)
-        {
-            param = new SystemParameters();
-        }
+        // Create param if one does not exist
+        if(param == null) { param = new SystemParameters(); }
+
         // TODO 
-        if(service== "vwc")
+        if(service == "vwc")
         {
-            
             if(operation=="wms")
             {
                 param.width = 100;
@@ -120,9 +118,9 @@ public class GeoRefManager
     }
 
     // NOTE: Look inside own dictionary for georef that matches the parameters
-    public List<string> query(int number=0, string name="", string TYPE="", string starttime="", string endtime="", string state="", string modelname="")
+    public List<string> Query(int number=0, string name="", string TYPE="", string starttime="", string endtime="", string state="", string modelname="")
     {
-        // Everything in here will be a or operation.....
+        /*// Everything in here will be a or operation.....
         List<string> georefs = new List<string>();
         int count = 0;
         if(number != 0)
@@ -155,7 +153,8 @@ public class GeoRefManager
         }
 
         // Return the Georeferences
-        return georefs;
+        return georefs;*/
+        return null;
     }
 
     // NOTE: Build a parameter struct (name of struct = ServiceParameters)
@@ -177,11 +176,11 @@ public class GeoRefManager
             Logger.WriteLine(rec.modelRunUUID);
             // We should play with the other of the if statements...
             // Normal Case
-            if(storedModelRuns.ContainsKey(rec.modelRunUUID))
+            if(modelRuns.ContainsKey(rec.modelRunUUID))
             {
                 // Call insert operation
                 Logger.WriteLine("ADDED");
-                storedModelRuns[rec.modelRunUUID].Insert(rec);
+                modelRuns[rec.modelRunUUID].Insert(rec);
             }
             // Cache Case
             else if(FileBasedCache.Exists(rec.modelRunUUID))
@@ -189,16 +188,16 @@ public class GeoRefManager
                 // Handle it
             }
             // Normal Case
-            else if(!storedModelRuns.ContainsKey(rec.modelRunUUID))
+            else if(!modelRuns.ContainsKey(rec.modelRunUUID))
             {
                 // Cache Case -- Check if cache has a georef
 
                 // Normal Case -- Insert it into storedModelRuns
                 Logger.WriteLine("ADDED");
-                storedModelRuns.Add(rec.modelRunUUID,new ModelRun(rec.modelname,rec.modelRunUUID,this));
+                modelRuns.Add(rec.modelRunUUID,new ModelRun(rec.modelname,rec.modelRunUUID,this));
 
                 // Call the insert
-                storedModelRuns[rec.modelRunUUID].Insert(rec);
+                modelRuns[rec.modelRunUUID].Insert(rec);
 
                 //  Testing Variable
                 if(!RecievedRefs.Contains(rec.modelRunUUID))
@@ -207,7 +206,7 @@ public class GeoRefManager
                 }
             }
         }
-        foreach(var i in storedModelRuns)
+        foreach(var i in modelRuns)
         {
             Logger.WriteLine(i.Value.Count().ToString());
         }
@@ -215,8 +214,8 @@ public class GeoRefManager
         {
             message(RecievedRefs);
         }
-        Logger.WriteLine("CREATED THIS MANY MODEL RUNS: " + storedModelRuns.Count);
-        foreach(var i in storedModelRuns)
+        Logger.WriteLine("CREATED THIS MANY MODEL RUNS: " + modelRuns.Count);
+        foreach(var i in modelRuns)
         {
             i.Value.DownloadDatasets();
         }

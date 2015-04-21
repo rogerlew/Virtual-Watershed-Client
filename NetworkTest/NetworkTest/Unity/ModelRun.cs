@@ -9,16 +9,17 @@ using System.Text;
 class ModelRun
 {
     // Fields
-    private string name;
-    private Dictionary<string, GeoReference> references = new Dictionary<string, GeoReference>();
+    private string Name;
+    public string ModelName;
+    public string ModelDataSetType;
+    public string ModelRunUUID;
 
     public DateTime Start;
     public DateTime End;
 
-    public string ModelName;
-    public string ModelDataSetType;
-    public string ModelRunUUID;
-    public GeoRefManager GRM;
+    public ModelRunManager GRM;
+    // private Dictionary<string, GeoReference> references = new Dictionary<string, GeoReference>();
+    private Dictionary<string, List<DataRecord>> references = new Dictionary<string, List<DataRecord>>();
 
     // Constructors
     public ModelRun(string modelRunName,string modelRunUUID)
@@ -27,7 +28,7 @@ class ModelRun
         ModelRunUUID = modelRunUUID;
     }
 
-    public ModelRun(string modelRunName, string modelRunUUID,GeoRefManager GM)
+    public ModelRun(string modelRunName, string modelRunUUID,ModelRunManager GM)
     {
         ModelName = modelRunName;
         ModelRunUUID = modelRunUUID;
@@ -35,7 +36,8 @@ class ModelRun
     }
 
     // Methods
-    public void addToModel(string label, GeoReference toAdd)
+    //public void addToModel(string label, GeoReference toAdd)
+    public void Add(string label, List<DataRecord> toAdd)
     {
         // Check if already in the model
         if( references.ContainsKey(label) )
@@ -67,27 +69,26 @@ class ModelRun
     /// <returns></returns>
     public bool Insert(DataRecord record)
     {
-        if(!BelongsTo(record))
-        {
-            return false;
-        }
-        // Determine whether or not we need to create a new georef object...
+        // Check if the record belongs to the model run
+        if(!BelongsTo(record)) { return false; }
 
-        if (!references.ContainsKey(record.variableName))
+        // Determine whether or not we need to create a new List<DR>
+        if( ! references.ContainsKey(record.variableName) )
         {
-            references[record.variableName] = new GeoReference();
+            references[record.variableName] = new List<DataRecord>();
         }
 
         // Insert data record into appopritate georef object --- if it doesn't already exist in this model run..
-        if (!references[record.variableName].records.Contains(record))
+        if( ! references[record.variableName].Contains(record) )
         {
-            references[record.variableName].records.Add(record);
+            references[record.variableName].Add(record);
         }
         
-        return false;
+        // Return
+        return true;
     }
 
-    public GeoReference getReference(string label)
+    public List<DataRecord> Get(string label)
     {
         return references[label];
     }
@@ -100,24 +101,27 @@ class ModelRun
     // Other params
     public void DownloadDatasets(bool all=true,string operation="wcs",SystemParameters param=null)
     {
-        if(param == null)
-        {
-            param = new SystemParameters();
-        }
+        // Create a default system parameter object
+        if(param == null) { param = new SystemParameters(); }
 
-        if(GRM == null)
-        {
-            return;
-        }
+        // Ensure the GRM reference is valid
+        if(GRM == null) { return; }
 
+        // TODO Need to fill out the parameters
+
+        // If all records are requests
         if(all)
         {
             // Simple Download Operation...
-            foreach(var i in references )
+            foreach(var i in references)
             {
-                GRM.download(i.Value.records, null, "vwc", operation);
+                GRM.Download(i.Value, null, "vwc", operation, param);
             }
         }
     }
 
+    public List<DataRecord> Query()
+    {
+        throw new NotImplementedException("TODO: Params and code");
+    }
 }
