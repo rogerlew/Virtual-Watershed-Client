@@ -18,11 +18,20 @@ class ModelRun
     public string ModelName;
     public string ModelDataSetType;
     public string ModelRunUUID;
+    public GeoRefManager GRM;
+
     // Constructors
     public ModelRun(string modelRunName,string modelRunUUID)
     {
         ModelName = modelRunName;
         ModelRunUUID = modelRunUUID;
+    }
+
+    public ModelRun(string modelRunName, string modelRunUUID,GeoRefManager GM)
+    {
+        ModelName = modelRunName;
+        ModelRunUUID = modelRunUUID;
+        GRM = GM;
     }
 
     // Methods
@@ -87,4 +96,28 @@ class ModelRun
     {
         return references.Count;
     }
+
+    // Other params
+    public void DownloadDatasets(bool all=true,string operation="wcs",SystemParameters param=null)
+    {
+        if(param == null)
+        {
+            param = new SystemParameters();
+        }
+
+        if(GRM == null)
+        {
+            return;
+        }
+
+        if(all)
+        {
+            // Simple Download Operation...
+            foreach(var i in references )
+            {
+                GRM.download(i.Value.records, null, "vwc", operation);
+            }
+        }
+    }
+
 }

@@ -31,6 +31,8 @@ namespace NetworkTest
         static void Main(string[] args)
         {
 
+
+            Logger.WriteToFile();
             //FileBasedCache.Clear();
             NetworkManager nm = new NetworkManager();
             //obs = new DataObserver();

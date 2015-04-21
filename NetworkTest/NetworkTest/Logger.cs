@@ -7,9 +7,9 @@ using System.Threading;
 
 public static class Logger
 {
-    static string path;
+    static string path="./log.txt";
     static StreamWriter writer;
-
+    static bool ToFile=false;
     public static void SetPath(string dest)
     {
         if (path != null)
@@ -20,9 +20,15 @@ public static class Logger
         writer = new StreamWriter(dest);
         path = dest;
     }
-
+    public static void WriteToFile()
+    {
+        if(writer != null)
+        writer = new StreamWriter(path);
+    }
     public static void Log(string line)
     {
+        if(writer == null)
+        WriteToFile();
         if (writer != null)
         {
             writer.WriteLine(line);
@@ -37,7 +43,10 @@ public static class Logger
 #else
         Console.WriteLine(line);
 #endif
-
+        if(ToFile)
+        {
+            writer.WriteLine(line);
+        }
     }
     
     public static void ReadKey()

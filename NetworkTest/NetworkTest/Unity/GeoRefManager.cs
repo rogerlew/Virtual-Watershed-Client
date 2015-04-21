@@ -20,14 +20,15 @@ public class GeoRefManager
 
     // TODO When a georef added, check which model run it belongs to and save the model run here
     // Questions that need to be answered: 
-    // Should we have an addModelRun() function? (And then just check the string field of the GeoRef to know which ModelRun it belongs to)
-    // Should ModelRuns (a reference to) be stored in GeoRefs? (This will create a cycle of references GeoRef_1 -> ModelRun -> GeoRef_1
+    // Should ModelRuns (a reference to) be stored in GeoRefs? (This will create a cycle of references GeoRef_1 -> ModelRun -> GeoRef_1 
+    // ~ Half Answered use the GeoRefManager to get the original model run
     Dictionary<string, ModelRun> storedModelRuns = new Dictionary<string, ModelRun>();
     
 
     // Filebased Cache entry.
     string cacheBackupEntry = "backup";
     string cacheRestoreEntry = "restore";
+
     // Utilities Utilities where for art thou Utilites 
     Utilities utilities = new Utilities();
 
@@ -87,12 +88,16 @@ public class GeoRefManager
 
     // NOTE: Populating the data inside a datarecord. Something like building the texture.
     // Gonna need a parameter object for this ----- for now just defaults
-    public void download(List<DataRecord> records, DataRecordSetter SettingTheRecord , string recordname, string service = "vwc", string operation = "wms")
+    public void download(List<DataRecord> records, DataRecordSetter SettingTheRecord , string service = "vwc", string operation = "wms",SystemParameters param=null)
     {
+        if(param == null)
+        {
+            param = new SystemParameters();
+        }
         // TODO 
         if(service== "vwc")
         {
-            SystemParameters param = new SystemParameters();
+            
             if(operation=="wms")
             {
                 param.width = 100;
@@ -190,10 +195,16 @@ public class GeoRefManager
 
                 // Normal Case -- Insert it into storedModelRuns
                 Logger.WriteLine("ADDED");
-                storedModelRuns.Add(rec.modelRunUUID,new ModelRun(rec.modelname,rec.modelRunUUID));
+                storedModelRuns.Add(rec.modelRunUUID,new ModelRun(rec.modelname,rec.modelRunUUID,this));
 
                 // Call the insert
                 storedModelRuns[rec.modelRunUUID].Insert(rec);
+
+                //  Testing Variable
+                if(!RecievedRefs.Contains(rec.modelRunUUID))
+                {
+                    RecievedRefs.Add(rec.modelRunUUID);
+                }
             }
         }
         foreach(var i in storedModelRuns)
@@ -205,6 +216,10 @@ public class GeoRefManager
             message(RecievedRefs);
         }
         Logger.WriteLine("CREATED THIS MANY MODEL RUNS: " + storedModelRuns.Count);
+        foreach(var i in storedModelRuns)
+        {
+            i.Value.DownloadDatasets();
+        }
     }
 
     public void OnClose()
