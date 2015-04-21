@@ -6,7 +6,7 @@ using System.Text;
 /// <summary>
 /// ModelRun class
 /// </summary>
-class ModelRun
+public class ModelRun
 {
     // Fields
     private string Name;
@@ -118,10 +118,52 @@ class ModelRun
                 GRM.Download(i.Value, null, "vwc", operation, param);
             }
         }
+
+        // We can change the order of the downloads as opposed to downloading all.
     }
 
-    public List<DataRecord> Query()
+    public List<DataRecord> Query(int number=0, string name="", string TYPE="", string starttime="", string endtime="", string state="", string modelname="")
     {
-        throw new NotImplementedException("TODO: Params and code");
+        int count = 0;
+        List<DataRecord> records = new List<DataRecord>();
+        // iterate through the list of datarecords __ variables in this case
+        foreach (var variable in references)
+        {
+
+            // iterate through the list of datarecords contain in this paricular variable
+            foreach(var record in variable.Value)
+            {
+                // Number Case
+                if(number == count)
+                {
+                    return records;
+                }
+
+                // Model Name case
+                if (modelname == this.ModelName)
+                {
+                    records.Add(record);
+                }
+             
+                // Number Case
+                else if(number>0)
+                {
+                    records.Add(record);
+                    count++;
+                }
+
+                // Or Case for remaining parameters
+                else
+                {
+                    if(record.name == name || record.TYPE == TYPE || record.start.ToString() == starttime || record.end.ToString() == endtime || record.state == state )
+                    {
+                        records.Add(record);
+                    }
+                }
+
+                // And Case...
+            }
+        }
+        return records;
     }
 }

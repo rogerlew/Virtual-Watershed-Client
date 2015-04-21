@@ -119,6 +119,7 @@
     <Compile Include="Unity\mouseListener.cs" />
     <Compile Include="Unity\mouseray.cs" />
     <Compile Include="SystemParameters.cs" />
+    <Compile Include="Unity\Simulator.cs" />
     <Compile Include="Unity\transform.cs" />
     <Compile Include="Unity\Utilities.cs" />
     <Compile Include="VWClient.cs" />

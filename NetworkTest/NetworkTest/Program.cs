@@ -22,7 +22,7 @@ namespace NetworkTest
         static VWClient vwc;
         static DataObserver obs;
         static ModelRunManager grm;
-
+        static Simulator simu;
         static void Recieved(List<string> message)
         {
             Logger.WriteLine("This has function has recieved: " + message.Count);
@@ -30,7 +30,10 @@ namespace NetworkTest
 
         static void Main(string[] args)
         {
-
+            simu = new Simulator();
+            simu.Simulation(.1f);
+            Console.ReadKey();
+            return;
 
             Logger.WriteToFile();
             //FileBasedCache.Clear();
@@ -49,7 +52,7 @@ namespace NetworkTest
 
             // This is not guranteed to give you 10 records upon request because getAvaliable has not finished yet...
             // This is for right now requests
-            Logger.WriteLine("COUNT: " + grm.Query(10).Count);
+            //Logger.WriteLine("COUNT: " + grm.Query(10).Count);
             //nm.Subscribe(obs);
             //nm.Subscribe(new LoggedObserver());
 

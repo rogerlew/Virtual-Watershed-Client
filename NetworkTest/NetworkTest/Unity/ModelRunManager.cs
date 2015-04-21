@@ -117,44 +117,17 @@ public class ModelRunManager
         }
     }
 
-    // NOTE: Look inside own dictionary for georef that matches the parameters
-    public List<string> Query(int number=0, string name="", string TYPE="", string starttime="", string endtime="", string state="", string modelname="")
+    // We will return the data records that are specific to the query.
+    public List<DataRecord> Query(int number=0, string name="", string TYPE="", string starttime="", string endtime="", string state="", string modelname="")
     {
-        /*// Everything in here will be a or operation.....
-        List<string> georefs = new List<string>();
-        int count = 0;
-        if(number != 0)
+        List<DataRecord> records = new List<DataRecord>();
+        // Check in the list of model runs based on the query parameters everything will be an or operation...
+        foreach (var i in modelRuns)
         {
-            foreach (var i in storedGeoRefs)
-            {
-                foreach (var j in i.Value.records)
-                {
-                    count++;
-                    georefs.Add(i.Key);
-                    break;
-                }
-                if(count == number)
-                {
-                    return georefs;
-                }
-            }
+            // Query inside of model run class... ---- AddRange append lists ---- I wonder what happens if you do List.AddRange(List) 
+            records.AddRange(i.Value.Query(number,name,TYPE,starttime,endtime,state,modelname));
         }
-        // need the metadata module here.....
-        foreach (var i in storedGeoRefs)
-        {
-            foreach(var j in i.Value.records)
-            {
-                if(j.name == name || j.TYPE == TYPE || starttime == j.start.ToString() || endtime == j.start.ToString() || state == j.state || modelname == j.modelname )
-                {
-                    georefs.Add(i.Key);
-                    break;
-                }
-            }
-        }
-
-        // Return the Georeferences
-        return georefs;*/
-        return null;
+        return records;
     }
 
     // NOTE: Build a parameter struct (name of struct = ServiceParameters)
@@ -163,6 +136,7 @@ public class ModelRunManager
         // TODO
         client.RequestRecords(((List<DataRecord> records) =>onGetAvailableComplete(records,Message)), param);
     }
+
     /// <summary>
     /// This needs to be tested.
     /// </summary>
@@ -224,7 +198,7 @@ public class ModelRunManager
     public void OnClose()
     {
         // Save things to cache
-        FileBasedCache.Insert<Dictionary<string, GeoReference>>(cacheRestoreEntry, storedGeoRefs);
+        //FileBasedCache.Insert<Dictionary<string, GeoReference>>(cacheRestoreEntry, storedGeoRefs);
         // or should we clear the cache!!!!!
     }
 
