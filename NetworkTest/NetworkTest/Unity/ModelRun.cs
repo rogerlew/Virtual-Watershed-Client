@@ -138,53 +138,64 @@ public class ModelRun
     {
 
     }
-
-    public List<DataRecord> Query(int number=0, string name="", string TYPE="", string starttime="", string endtime="", string state="", string modelname="")
+    
+    public List<DataRecord> Query(bool usingOR=true, int number=0, string name="", string Type="", string starttime="", string endtime="", string state="", string modelname="")
     {
+        // Initialize variables
         int count = 0;
         List<DataRecord> records = new List<DataRecord>();
+
         // iterate through the list of datarecords __ variables in this case
         foreach (var variable in references)
         {
-
             // iterate through the list of datarecords contain in this paricular variable
             foreach(var record in variable.Value)
             {
-                // Number Case
-                if(number == count)
+                // Check if the case where everything is desired
+                if(number <= 0)
                 {
+                    // Add the record
+                    records.Add(record);
+                }
+                else if(count == number)
+                {
+                    // Return what you have
                     return records;
                 }
-
-                // Model Name case
-                if (modelname == this.ModelName)
+                else if(usingOR)
                 {
-                    records.Add(record);
-                }
-             
-                // Number Case
-                else if(number>0)
-                {
-                    records.Add(record);
-                    count++;
-                }
-
-                // Or Case for remaining parameters
-                else
-                {
-                    if(record.name == name || record.TYPE == TYPE || record.start.ToString() == starttime || record.end.ToString() == endtime || record.state == state )
+                    // Check record using OR-Query
+                    if(record.modelname == modelname || record.name == name || record.Type == Type || 
+                        record.start.ToString() == starttime || record.end.ToString() == endtime || 
+                        record.state == state )
                     {
+                        // Add the record
                         records.Add(record);
+                        count++;
                     }
                 }
-
-                // And Case...
+                else if(!usingOR)
+                {
+                    // Check record using AND-Query
+                    if ( (modelname == "" || modelname == this.ModelName) &&
+                         (name == "" || name == record.name ) &&
+                         (Type == "" || Type == record.Type ) &&
+                         (starttime == "" || starttime == record.start.ToString()) &&
+                         (endtime == "" || endtime == record.end.ToString()) &&
+                         (state == "" || state == record.state)
+                        )
+                    {
+                        // Add the record
+                        records.Add(record);
+                        count++;
+                    }
+                }
             }
         }
         return records;
     }
 
-    public DataRecord FetchNearestDataPoint(string VariableNameggg, DateTime pointOfInterest)
+    public DataRecord FetchNearestDataPoint(string VariableName, DateTime pointOfInterest)
     {
         // Check if ModelRun exists here
         if(!references.ContainsKey(VariableName))

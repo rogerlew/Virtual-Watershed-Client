@@ -83,10 +83,10 @@ class VW_JSON_Parser : Parser
 
 
                 SimpleJSON.JSONNode dict = encoded["results"][records]["spatial"].AsObject;
-                current.TYPE = encoded["results"][records]["description"].ToString().Split(new char[] { ' ' })[0].Replace('"', ' ').Trim();
+                current.Type = encoded["results"][records]["description"].ToString().Split(new char[] { ' ' })[0].Replace('"', ' ').Trim();
                 if (encoded["results"][records]["description"].ToString().Contains("dem"))
                 {
-                    current.TYPE = "DEM";
+                    current.Type = "DEM";
                 }
                 current.modelRunUUID = encoded["results"][records]["model_run_uuid"].ToString().Replace('"', ' ').Trim();
 
