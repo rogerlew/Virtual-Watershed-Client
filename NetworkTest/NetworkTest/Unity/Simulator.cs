@@ -41,8 +41,17 @@ public class Simulator
         start = new DateTime(1997, 1, 1);
         end = new DateTime(1998, 1, 1);
         TimeDelta = new TimeSpan(1, 0, 0);
+        DataRecord current = null;
+        if(current != null && current.texture != null)
+        {
+            // Print something out here...
+        }
     }
 
+    public void SetModelRun(ModelRun mr)
+    {
+        ModelRuns.Add(mr);
+    }
 
     // A test simulation function for debugging purposes.
     public void Simulation(float dt)
@@ -55,6 +64,7 @@ public class Simulator
             // Step through current data...
 
             Console.WriteLine(current);
+            Update(TimeDelta);
             current = current.AddTicks((long)(dt * TimeDelta.Ticks));
         }
     }
@@ -65,10 +75,39 @@ public class Simulator
 
     }
 
+    // This is the previous record that was used.
+    int previousRecord = 0;
 
     // Use the default timestep contained within this class
-    public void Update()
+    public void Update(TimeSpan time)
     {
+        if(previousRecord < 0 || SetToStepThrough.Count >= previousRecord ||SetToStepThrough == null)
+        {
+            // Throw Error
+            return;
+        }
+        // Grab next time
+        DateTime NextTime = SetToStepThrough[previousRecord].start.Add(time);
+
+        DateTime previousStart = SetToStepThrough[previousRecord].start;
+        int current = previousRecord;
+        
+        // Creating a compartor
+        DataRecordComparers.DateAddedDescending compare = new DataRecordComparers.DateAddedDescending();
+
+        // Sort the list..
+        SetToStepThrough.Sort(compare);
+
+        // Find next record -- Assuming that the list is in order at this point.
+        for(int i = previousRecord+1; i < SetToStepThrough.Count; i++)
+        {
+            if(SetToStepThrough[i].start >= NextTime)
+            {
+                TimeSpan delta = start - NextTime;
+                previousRecord = i;
+                return;
+            }
+        }
 
     }
 

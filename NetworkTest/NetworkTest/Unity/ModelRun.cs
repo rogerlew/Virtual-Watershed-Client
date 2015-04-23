@@ -184,7 +184,7 @@ public class ModelRun
         return records;
     }
 
-    public DataRecord FetchNearestDataPoint(string VariableNameggg, DateTime pointOfInterest)
+    public DataRecord FetchNearestDataPoint(string VariableName, DateTime pointOfInterest)
     {
         // Check if ModelRun exists here
         if(!references.ContainsKey(VariableName))

@@ -58,6 +58,12 @@ public class ModelRunManager
         return modelRuns[key];
     }
 
+    // Returns all model run uuids..
+    public List<string> GetKeys()
+    {
+        return modelRuns.Keys.ToList();
+    }
+
     // TODO: Needs to be moved
     /* public void buildObject(string recordname,string buildType="")
     {

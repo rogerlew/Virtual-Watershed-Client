@@ -49,6 +49,8 @@ namespace NetworkTest
             sp.model_set_type = "";
             grm.getAvailable(sp,Message: Recieved);
             Thread.Sleep(1000);
+            //
+            //simu.SetModelRun();
 
             // This is not guranteed to give you 10 records upon request because getAvaliable has not finished yet...
             // This is for right now requests
