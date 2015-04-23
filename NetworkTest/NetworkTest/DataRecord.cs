@@ -257,7 +257,7 @@ public class DataRecord
 
     // This is the holy grail of what the data should be represented as in the visualization.
     // Currently the applciation uses the TYPE to designate the difference between Shapes, DEMs, and model data.
-    public string TYPE;
+    public string Type;
 
 
     // Temporary parameters.
