@@ -17,7 +17,7 @@ public class ModelRun
     public DateTime Start;
     public DateTime End;
 
-    public ModelRunManager GRM;
+    public ModelRunManager MRM;
     // private Dictionary<string, GeoReference> references = new Dictionary<string, GeoReference>();
     private Dictionary<string, List<DataRecord>> references = new Dictionary<string, List<DataRecord>>();
 
@@ -32,7 +32,7 @@ public class ModelRun
     {
         ModelName = modelRunName;
         ModelRunUUID = modelRunUUID;
-        GRM = GM;
+        MRM = GM;
     }
 
     // Methods
@@ -105,7 +105,7 @@ public class ModelRun
         if(param == null) { param = new SystemParameters(); }
 
         // Ensure the GRM reference is valid
-        if(GRM == null) { return; }
+        if(MRM == null) { return; }
 
         // TODO Need to fill out the parameters
 
@@ -115,11 +115,28 @@ public class ModelRun
             // Simple Download Operation...
             foreach(var i in references)
             {
-                GRM.Download(i.Value, null, "vwc", operation, param);
+                MRM.Download(i.Value, null, "vwc", operation, param);
             }
         }
 
         // We can change the order of the downloads as opposed to downloading all.
+    }
+
+    public void FetchAll(string ModelVar,string service="wms",SystemParameters param=null)
+    {
+        // Let the downloading begin!
+        foreach (var i in references[ModelVar])
+        {
+            List<DataRecord> Record = new List<DataRecord>();
+            Record.Add(i);
+            MRM.Download(Record, null, "vwc", service, param);
+        }
+    }
+
+    // For filebased simulations .... This is just case we don't have any data in June.
+    public void FileBasedFetch()
+    {
+
     }
 
     public List<DataRecord> Query(int number=0, string name="", string TYPE="", string starttime="", string endtime="", string state="", string modelname="")
@@ -165,5 +182,25 @@ public class ModelRun
             }
         }
         return records;
+    }
+
+    public DataRecord FetchNearestDataPoint(string VariableNameggg, DateTime pointOfInterest)
+    {
+        // Check if ModelRun exists here
+        if(!references.ContainsKey(VariableName))
+        {
+            return null;
+        }
+
+        // For now a linear search -- This can be improved
+        foreach(var i in references[VariableName])
+        {
+            if(i.start != null && i.end != null && pointOfInterest <= i.end && pointOfInterest >= i.start)
+            {
+                return i;
+            }
+        }
+
+        return null;
     }
 }
