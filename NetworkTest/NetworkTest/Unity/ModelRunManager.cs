@@ -53,9 +53,14 @@ public class ModelRunManager
     public ModelRunManager(VWClient refToClient) { client = refToClient; }
 
     // Methods
-    public ModelRun Get(string key)
+    public List<KeyValuePair<string, ModelRun>> GetByName(string name)
     {
-        return modelRuns[key];
+        return modelRuns.Where(x => x.Value.ModelName == name).ToList();
+    }
+
+    public ModelRun GetByUUID(string uuid)
+    {
+        return modelRuns[uuid];
     }
 
     // TODO: Needs to be moved
