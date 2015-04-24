@@ -22,8 +22,9 @@ public static class Logger
     }
     public static void WriteToFile()
     {
-        if(writer != null)
+        if(writer == null)
         writer = new StreamWriter(path);
+        ToFile = true;
     }
     public static void Log(string line)
     {
@@ -45,7 +46,7 @@ public static class Logger
 #endif
         if(ToFile)
         {
-            writer.WriteLine(line);
+            Log(line);
         }
     }
     

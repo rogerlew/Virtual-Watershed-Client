@@ -136,7 +136,7 @@ public class ModelRunManager
         foreach (var i in modelRuns)
         {
             // Query inside of model run class... ---- AddRange append lists ---- I wonder what happens if you do List.AddRange(List) 
-            records.AddRange(i.Value.Query(number,name,TYPE,starttime,endtime,state,modelname));
+            //records.AddRange(i.Value.Query(number,name,TYPE,starttime,endtime,state,modelname));
         }
         return records;
     }
@@ -155,10 +155,12 @@ public class ModelRunManager
     /// <param name="message"></param>
     private void onGetAvailableComplete(List<DataRecord> Records,GeoRefMessage message)
     {
+        Logger.WriteLine(Records.Count.ToString());
         List<string> RecievedRefs = new List<string>();
         foreach(DataRecord rec in Records)
         {
             Logger.WriteLine(rec.modelRunUUID);
+            Logger.WriteLine(rec.start.ToString());
             // We should play with the other of the if statements...
             // Normal Case
             if(modelRuns.ContainsKey(rec.modelRunUUID))

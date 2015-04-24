@@ -25,15 +25,15 @@ namespace NetworkTest
         static Simulator simu;
         static void Recieved(List<string> message)
         {
-            Logger.WriteLine("This has function has recieved: " + message.Count);
+            Logger.WriteLine("This function has recieved: " + message.Count);
         }
 
         static void Main(string[] args)
         {
             simu = new Simulator();
-            simu.Simulation(.1f);
-            Console.ReadKey();
-            return;
+            //simu.Simulation(.1f);
+            //Console.ReadKey();
+            //return;
 
             Logger.WriteToFile();
             //FileBasedCache.Clear();
@@ -48,7 +48,17 @@ namespace NetworkTest
             sp.limit = 200;
             sp.model_set_type = "";
             grm.getAvailable(sp,Message: Recieved);
-            Thread.Sleep(1000);
+            Thread.Sleep(5000);
+            Console.WriteLine("HERE");
+            for (int i = 0; i < grm.GetKeys().Count; i++)
+            {
+                Console.WriteLine(grm.GetByUUID(grm.GetKeys()[i]));
+                simu.SetModelRun(grm.GetByUUID(grm.GetKeys()[i]));
+                simu.SetStartDate(grm.GetByUUID(grm.GetKeys()[i]).GetBeginModelTime());
+                simu.SetEndDate(grm.GetByUUID(grm.GetKeys()[i]).GetEndModelTime());
+                simu.Simulation(1.0f);
+            }
+            Logger.WriteLine("HAHAHAAHHA");
             //
             //simu.SetModelRun();
 
@@ -78,7 +88,7 @@ namespace NetworkTest
             grm.OnClose();
             ////FileBasedCache.Clear();
             ////t.Suspend();
-            //Logger.Close();
+            Logger.Close();
         }
 
         public static int i = 1;

@@ -33,8 +33,7 @@ public class Simulator
     // Threshold for how many we should have in ram
     int MaxLoaded = 1000;
 
-    // List of Data Records to step through.
-    List<DataRecord> SetToStepThrough;
+
 
     public Simulator()
     {
@@ -48,24 +47,55 @@ public class Simulator
         }
     }
 
+    public void SetStartDate(DateTime Time)
+    {
+        start = Time;
+    }
+
+    public void SetEndDate(DateTime Time)
+    {
+        end = Time;
+    }
+
     public void SetModelRun(ModelRun mr)
     {
         ModelRuns.Add(mr);
+        ModelVar = mr.Query()[0].variableName;
     }
 
     // A test simulation function for debugging purposes.
     public void Simulation(float dt)
     {
+        currentTimeFrame = 0;
+        Logger.WriteLine("RUNNING SIMULATION");
         
         TimeStep = dt;
-        DateTime current = start;
-        while(current  < end )
-        {
-            // Step through current data...
+        DateTime CurrentTime = start;
+        Logger.WriteLine(CurrentTime.ToString());
+        Logger.WriteLine(end.ToString());
 
-            Console.WriteLine(current);
-            Update(TimeDelta);
-            current = current.AddTicks((long)(dt * TimeDelta.Ticks));
+        int status = 0;
+        while(CurrentTime  < end )
+        {
+            if(status != -1)
+            {
+                currentTimeFrame = status;
+            }
+            // Step through current data...
+            if(currentTimeFrame == -1)
+            {
+                Logger.WriteLine(currentTimeFrame.ToString());
+                status = ModelRuns[0].Update(ModelVar, currentTimeFrame, CurrentTime);
+                CurrentTime = CurrentTime.AddTicks((long)(dt * TimeDelta.Ticks));
+                continue;
+            } 
+            Logger.WriteLine(CurrentTime.ToString() + " " + currentTimeFrame);
+            
+            status = ModelRuns[0].Update(ModelVar, currentTimeFrame, CurrentTime);
+
+            // Download Function.... --- Maybe with a callback that sends the data to the proper place...
+
+            CurrentTime = CurrentTime.AddTicks((long)(dt * TimeDelta.Ticks));
         }
     }
 
@@ -76,40 +106,7 @@ public class Simulator
     }
 
     // This is the previous record that was used.
-    int previousRecord = 0;
-
-    // Use the default timestep contained within this class
-    public void Update(TimeSpan time)
-    {
-        if(previousRecord < 0 || SetToStepThrough.Count >= previousRecord ||SetToStepThrough == null)
-        {
-            // Throw Error
-            return;
-        }
-        // Grab next time
-        DateTime NextTime = SetToStepThrough[previousRecord].start.Add(time);
-
-        DateTime previousStart = SetToStepThrough[previousRecord].start;
-        int current = previousRecord;
-        
-        // Creating a compartor
-        DataRecordComparers.DateAddedDescending compare = new DataRecordComparers.DateAddedDescending();
-
-        // Sort the list..
-        SetToStepThrough.Sort(compare);
-
-        // Find next record -- Assuming that the list is in order at this point.
-        for(int i = previousRecord+1; i < SetToStepThrough.Count; i++)
-        {
-            if(SetToStepThrough[i].start >= NextTime)
-            {
-                TimeSpan delta = start - NextTime;
-                previousRecord = i;
-                return;
-            }
-        }
-
-    }
+    int currentTimeFrame = 0;
 
     // A setter function for setting the model runs.
     public void SetModelRuns(List<ModelRun> Models)
@@ -118,8 +115,6 @@ public class Simulator
         ModelRuns.AddRange(ModelRuns);
     }
     
-    // File Cache Entry
-    string CurrentModel = "model";
 
     /// <summary>
     /// This FetchData function will get data from the model run classes.

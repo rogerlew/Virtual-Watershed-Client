@@ -36,7 +36,7 @@ class VW_JSON_Parser : Parser
     DateTime getDateTime(string time)
     {
         string[] nums = time.Split(new char[] { '-', ':' }, StringSplitOptions.RemoveEmptyEntries);
-        //Debug.LogError(nums[0]);
+        Console.WriteLine(nums[0]);
         return new DateTime(int.Parse(nums[0]), int.Parse(nums[1]), int.Parse(nums[2]), int.Parse(nums[3]), int.Parse(nums[4]), int.Parse(nums[5]));
     }
 
@@ -55,7 +55,8 @@ class VW_JSON_Parser : Parser
             // iterating through results
             for (int records = 0; records < encoded["results"].Count; records++)
             {
-                Logger.WriteLine(records.ToString());
+                Logger.WriteLine(encoded["results"].Count.ToString());
+                //Logger.WriteLine(records.ToString());
                 //Logger.ReadKey();
                 current = null;
                 //first determine if record exists in collection to be updated or added
@@ -63,7 +64,7 @@ class VW_JSON_Parser : Parser
                 var id = encoded["results"][records]["uuid"].ToString().Replace('"', ' ').Trim();
                 var name = encoded["results"][records]["name"].ToString().Replace('"', ' ').Trim();
 
-                foreach (var i in Records)
+                /*foreach (var i in Records)
                 {
                     if(i.name == name)
                     {
@@ -71,13 +72,13 @@ class VW_JSON_Parser : Parser
                     }
                 }
                 if(current == null)
-                {
-                    current = new DataRecord();
-                    Records.Add(current);
-                }
+                {*/
+                current = new DataRecord();
+                Records.Add(current);
+                //}
 
                 current.services["xml_fgdc"] = encoded["results"][records]["metadata"][0]["FGDC-STD-001-1998"]["xml"];
-                Logger.WriteLine(current.services["xml_fgdc"]);
+                //Logger.WriteLine(current.services["xml_fgdc"]);
                 var description = encoded["results"][records]["description"].ToString();
 
 
@@ -93,12 +94,15 @@ class VW_JSON_Parser : Parser
                 current.modelname = encoded["results"][records]["categories"][0]["modelname"].ToString().Replace('"', ' ').Trim();
                 current.state = encoded["results"][records]["categories"][0]["state"].ToString().Replace('"', ' ').Trim();
                 current.location = encoded["results"][records]["categories"][0]["location"].ToString().Replace('"', ' ').Trim();
+                //if (encoded["results"][records].ToString().Contains("valid_dates"))
+                //Console.WriteLine(encoded["results"][records].ToString());
 
-                if (current.modelname == "isnobal" || encoded["results"]["valid_dates"] != null)
+                if (encoded["results"][records]["valid_dates"] != null)
                 {
                     current.start = getDateTime(encoded["results"][records]["valid_dates"]["start"].ToString().Replace('"', ' ').Trim());
                     current.end = getDateTime(encoded["results"][records]["valid_dates"]["end"].ToString().Replace('"', ' ').Trim());
-
+                    Console.WriteLine("DATE: " + encoded["results"][records]["valid_dates"]["start"] + " " + encoded["results"][records]["valid_dates"]["end"] + " " + records);
+                    Console.WriteLine(current.start);
 
                 }
 
@@ -131,7 +135,7 @@ class VW_JSON_Parser : Parser
                 current.variableName = encoded["results"][records]["model_vars"].ToString().Replace('"', ' ').Trim();
 
                 current.description = description;
-                Logger.WriteLine(name);
+               // Logger.WriteLine(name);
 
             }
 

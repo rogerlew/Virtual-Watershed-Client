@@ -8,6 +8,9 @@ using System.Text;
 /// </summary>
 public class ModelRun
 {
+    // We need a lock for the model run class due to the curse of caching
+    readonly object LOCK; // Probably 
+
     // Fields
     private string Name;
     public string ModelName;
@@ -60,6 +63,40 @@ public class ModelRun
     public bool BelongsTo(DataRecord record)
     {
         return record.modelname == ModelName && record.modelRunUUID == ModelRunUUID;
+    }
+    
+    /// <summary>
+    /// Used by the Simulation class to fetch data.
+    /// </summary>
+    /// <param name="ModelVar"></param>
+    /// <param name="CurrentTimeFrame"></param>
+    public bool HasData(string ModelVar, int CurrentTimeFrame,bool texture=false)
+    {
+        //Need to determine the type of download.
+        if (!texture)
+        {
+
+        }
+        else
+        {
+
+        }
+        // Returns whether it has the data...
+        return false;
+    }
+
+    public void DownloadData(string ModelVar, int CurrentTimeFrame,bool texture=false)
+    {
+        //Need to determine the type of download.
+        if(!texture)
+        {
+
+        }
+        else
+        {
+
+        }
+        // Handle the download here
     }
 
     /// <summary>
@@ -195,6 +232,50 @@ public class ModelRun
         return records;
     }
 
+
+    // These can be replaced with inserts from datarecords.
+    public DateTime GetBeginModelTime()
+    {
+        DateTime time = DateTime.MaxValue;
+        Logger.WriteLine(time.ToString());
+        foreach (var i in references)
+        {
+            Logger.WriteLine(i.Value.Count.ToString());
+            Logger.WriteLine("ORIGINAL: " + references[i.Key][0].start);
+            foreach(var j in i.Value)
+            {
+                Logger.WriteLine(j.start.ToString());
+                if(time > j.start)
+                {
+                    time = j.start;
+                }
+            }
+        }
+        Logger.WriteLine("BEGINNING OF TIME!!!!!!! " + time);
+        return time;
+    }
+
+    public DateTime GetEndModelTime()
+    {
+        DateTime time = DateTime.MinValue;
+        Logger.WriteLine(time.ToString());
+        foreach (var i in references)
+        {
+            Logger.WriteLine(i.Value.Count.ToString());
+            Logger.WriteLine("ORIGINAL: " + i.Value[0].end);
+            foreach (var j in i.Value)
+            {
+                Logger.WriteLine(j.end.ToString());
+                if (j.end > time)
+                {
+                    time = j.end;
+                }
+            }
+        }
+        Logger.WriteLine("END OF TIME!!!!!!! " + time);
+        return time;
+    }
+
     public DataRecord FetchNearestDataPoint(string VariableName, DateTime pointOfInterest)
     {
         // Check if ModelRun exists here
@@ -213,5 +294,48 @@ public class ModelRun
         }
 
         return null;
+    }
+
+
+    // Use the default timestep contained within this class
+
+    /// <summary>
+    /// An update function that is to give the next step in a simulation.
+    /// </summary>
+    /// <param name="ModelVar"></param>
+    /// <param name="CurrentTimeStep"></param>
+    /// <param name="current"></param>
+    /// <returns></returns>
+    public int Update(string ModelVar, int CurrentTimeStep, DateTime current)
+    {
+        //Logger.WriteLine("LOG!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+        //if (SetToStepThrough == null || previousRecord < 0 || SetToStepThrough.Count <= previousRecord)
+        {
+            // Throw Error
+            //return;
+        }
+
+
+        // Creating a compartor
+        DataRecordComparers.StartDateDescending compare = new DataRecordComparers.StartDateDescending();
+
+        // Sort the list..
+        if (!references.ContainsKey(ModelVar))
+            return -1;
+        references[ModelVar].Sort(compare);
+
+        // Find next record -- Assuming that the list is in order at this point.
+        for (int i = CurrentTimeStep + 1; i < references[ModelVar].Count; i++)
+        {
+            //Logger.WriteLine(SetToStepThrough[previousRecord].start.ToString() + " " + SetToStepThrough[previousRecord].end.ToString());
+            //  Logger.WriteLine(SetToStepThrough[i].start.ToString() + " " + SetToStepThrough[i].end.ToString());
+            //Logger.WriteLine(current.ToString());
+            if (references[ModelVar][i].start >= current)
+            {
+                //TimeSpan delta = start - NextTime;
+                return i;
+            }
+        }
+        return -1;
     }
 }
