@@ -14,6 +14,8 @@ public class SystemParameters
     public int width = 0;
     public int height = 0;
 
+    public string name = "";
+    public string TYPE = "";
     public string model_set_type = "vis";
     public string service = "";
     public string query = "";

@@ -26,7 +26,7 @@ public class ModelRunManager
     // Should ModelRuns (a reference to) be stored in GeoRefs? (This will create a cycle of references GeoRef_1 -> ModelRun -> GeoRef_1 
     // ~ Half Answered use the GeoRefManager to get the original model run
     Dictionary<string, ModelRun> modelRuns = new Dictionary<string, ModelRun>();
-    
+
     // Filebased Cache entry.
     string cacheBackupEntry = "backup";
     string cacheRestoreEntry = "restore";
@@ -39,10 +39,10 @@ public class ModelRunManager
     public void Start()
     {
         // Load up cache?
-        if(FileBasedCache.Exists(cacheRestoreEntry))
+        if (FileBasedCache.Exists(cacheRestoreEntry))
         {
             Logger.WriteLine("Restoring Previous Session");
-            
+
             // Don't know how to fix
             //storedGeoRefs = FileBasedCache.Get<Dictionary<string, GeoReference>>(cacheRestoreEntry);
         }
@@ -99,53 +99,56 @@ public class ModelRunManager
     // NOTE: Populating the data inside a datarecord. Something like building the texture.
     // Gonna need a parameter object for this ----- for now just defaults
     // TODO Consider Removing DataRecordSetter
-    public void Download(List<DataRecord> records, DataRecordSetter SettingTheRecord, string service = "vwc", string operation = "wms", SystemParameters param=null)
+    public void Download(List<DataRecord> records, DataRecordSetter SettingTheRecord, string service = "vwc", string operation = "wms", SystemParameters param = null)
     {
         // Create param if one does not exist
-        if(param == null) { param = new SystemParameters(); }
+        if (param == null) { param = new SystemParameters(); }
 
         // TODO 
-        if(service == "vwc")
+        if (service == "vwc")
         {
-            if(operation=="wms")
+            if (operation == "wms")
             {
                 param.width = 100;
                 param.height = 100;
-                client.getMap(SettingTheRecord,records[0], param);
+                client.getMap(SettingTheRecord, records[0], param);
             }
-            else if(operation=="wcs")
+            else if (operation == "wcs")
             {
-                client.getCoverage(SettingTheRecord,records[0], param);
+                client.getCoverage(SettingTheRecord, records[0], param);
             }
-            else if(operation=="wfs")
+            else if (operation == "wfs")
             {
-                client.getFeatures(SettingTheRecord,records[0], param);
+                client.getFeatures(SettingTheRecord, records[0], param);
             }
-            else if(operation=="fgdc")
+            else if (operation == "fgdc")
             {
-                client.GetMetaData(SettingTheRecord,records);
+                client.GetMetaData(SettingTheRecord, records);
             }
         }
     }
 
     // We will return the data records that are specific to the query.
-    public List<DataRecord> Query(int number=0, string name="", string TYPE="", string starttime="", string endtime="", string state="", string modelname="")
+    public List<DataRecord> Query(SystemParameters parameters = null, bool Or = true, int number = 0)
     {
         List<DataRecord> records = new List<DataRecord>();
         // Check in the list of model runs based on the query parameters everything will be an or operation...
         foreach (var i in modelRuns)
         {
             // Query inside of model run class... ---- AddRange append lists ---- I wonder what happens if you do List.AddRange(List) 
-            //records.AddRange(i.Value.Query(number,name,TYPE,starttime,endtime,state,modelname));
+            records.AddRange(i.Value.Query(parameters, Or, number));
         }
         return records;
     }
 
     // NOTE: Build a parameter struct (name of struct = ServiceParameters)
-    public void getAvailable(SystemParameters param, GeoRefMessage Message=null)
+    public void getAvailable(SystemParameters param, GeoRefMessage Message = null, DataRecordSetter Setter = null)
     {
         // TODO
-        client.RequestRecords(((List<DataRecord> records) =>onGetAvailableComplete(records,Message)), param);
+        if (Setter == null)
+            client.RequestRecords(((List<DataRecord> records) => onGetAvailableComplete(records, Message)), param);
+        else
+            client.RequestRecords(((List<DataRecord> records) => onGetAvailableComplete(records, Setter)), param);
     }
 
     /// <summary>
@@ -153,56 +156,116 @@ public class ModelRunManager
     /// </summary>
     /// <param name="Records"></param>
     /// <param name="message"></param>
-    private void onGetAvailableComplete(List<DataRecord> Records,GeoRefMessage message)
+    private void onGetAvailableComplete(List<DataRecord> Records, DataRecordSetter message)
     {
         Logger.WriteLine(Records.Count.ToString());
         List<string> RecievedRefs = new List<string>();
-        foreach(DataRecord rec in Records)
+        foreach (DataRecord rec in Records)
         {
             Logger.WriteLine(rec.modelRunUUID);
             Logger.WriteLine(rec.start.ToString());
             // We should play with the other of the if statements...
             // Normal Case
-            if(modelRuns.ContainsKey(rec.modelRunUUID))
+            if (modelRuns.ContainsKey(rec.modelRunUUID))
             {
                 // Call insert operation
                 Logger.WriteLine("ADDED");
                 modelRuns[rec.modelRunUUID].Insert(rec);
             }
             // Cache Case
-            else if(FileBasedCache.Exists(rec.modelRunUUID))
+            else if (FileBasedCache.Exists(rec.modelRunUUID))
             {
                 // Handle it
             }
             // Normal Case
-            else if(!modelRuns.ContainsKey(rec.modelRunUUID))
+            else if (!modelRuns.ContainsKey(rec.modelRunUUID))
             {
                 // Cache Case -- Check if cache has a georef
 
                 // Normal Case -- Insert it into storedModelRuns
                 Logger.WriteLine("ADDED");
-                modelRuns.Add(rec.modelRunUUID,new ModelRun(rec.modelname,rec.modelRunUUID,this));
+                modelRuns.Add(rec.modelRunUUID, new ModelRun(rec.modelname, rec.modelRunUUID, this));
 
                 // Call the insert
                 modelRuns[rec.modelRunUUID].Insert(rec);
 
                 //  Testing Variable
-                if(!RecievedRefs.Contains(rec.modelRunUUID))
+                if (!RecievedRefs.Contains(rec.modelRunUUID))
                 {
                     RecievedRefs.Add(rec.modelRunUUID);
                 }
             }
         }
-        foreach(var i in modelRuns)
+        foreach (var i in modelRuns)
         {
             Logger.WriteLine(i.Value.Count().ToString());
         }
-        if(message != null)
+        if (message != null)
+        {
+            message(Records);
+        }
+        Logger.WriteLine("CREATED THIS MANY MODEL RUNS: " + modelRuns.Count);
+        foreach (var i in modelRuns)
+        {
+            i.Value.DownloadDatasets();
+        }
+    }
+
+    /// <summary>
+    /// This needs to be tested.
+    /// </summary>
+    /// <param name="Records"></param>
+    /// <param name="message"></param>
+    private void onGetAvailableComplete(List<DataRecord> Records, GeoRefMessage message)
+    {
+        Logger.WriteLine(Records.Count.ToString());
+        List<string> RecievedRefs = new List<string>();
+        foreach (DataRecord rec in Records)
+        {
+            Logger.WriteLine(rec.modelRunUUID);
+            Logger.WriteLine(rec.start.ToString());
+            // We should play with the other of the if statements...
+            // Normal Case
+            if (modelRuns.ContainsKey(rec.modelRunUUID))
+            {
+                // Call insert operation
+                Logger.WriteLine("ADDED");
+                modelRuns[rec.modelRunUUID].Insert(rec);
+            }
+            // Cache Case
+            else if (FileBasedCache.Exists(rec.modelRunUUID))
+            {
+                // Handle it
+            }
+            // Normal Case
+            else if (!modelRuns.ContainsKey(rec.modelRunUUID))
+            {
+                // Cache Case -- Check if cache has a georef
+
+                // Normal Case -- Insert it into storedModelRuns
+                Logger.WriteLine("ADDED");
+                modelRuns.Add(rec.modelRunUUID, new ModelRun(rec.modelname, rec.modelRunUUID, this));
+
+                // Call the insert
+                modelRuns[rec.modelRunUUID].Insert(rec);
+
+                //  Testing Variable
+                if (!RecievedRefs.Contains(rec.modelRunUUID))
+                {
+                    RecievedRefs.Add(rec.modelRunUUID);
+                }
+            }
+        }
+        foreach (var i in modelRuns)
+        {
+            Logger.WriteLine(i.Value.Count().ToString());
+        }
+        if (message != null)
         {
             message(RecievedRefs);
         }
         Logger.WriteLine("CREATED THIS MANY MODEL RUNS: " + modelRuns.Count);
-        foreach(var i in modelRuns)
+        foreach (var i in modelRuns)
         {
             i.Value.DownloadDatasets();
         }

@@ -176,7 +176,7 @@ public class ModelRun
 
     }
     
-    public List<DataRecord> Query(bool usingOR=true, int number=0, string name="", string Type="", string starttime="", string endtime="", string state="", string modelname="")
+    public List<DataRecord> Query(SystemParameters param=null, bool usingOR=true, int number=0)
     {
         // Initialize variables
         int count = 0;
@@ -202,9 +202,9 @@ public class ModelRun
                 else if(usingOR)
                 {
                     // Check record using OR-Query
-                    if(record.modelname == modelname || record.name == name || record.Type == Type || 
-                        record.start.ToString() == starttime || record.end.ToString() == endtime || 
-                        record.state == state )
+                    if(record.modelname == this.ModelName || record.name == param.name || record.Type == param.TYPE || 
+                        record.start.ToString() == param.starttime || record.end.ToString() == param.endtime || 
+                        record.state == param.state )
                     {
                         // Add the record
                         records.Add(record);
@@ -214,12 +214,12 @@ public class ModelRun
                 else if(!usingOR)
                 {
                     // Check record using AND-Query
-                    if ( (modelname == "" || modelname == this.ModelName) &&
-                         (name == "" || name == record.name ) &&
-                         (Type == "" || Type == record.Type ) &&
-                         (starttime == "" || starttime == record.start.ToString()) &&
-                         (endtime == "" || endtime == record.end.ToString()) &&
-                         (state == "" || state == record.state)
+                    if ( (param.modelname == "" || param.modelname == this.ModelName) &&
+                         (param.name == "" || param.name == record.name ) &&
+                         (param.TYPE == "" || param.TYPE == record.Type) &&
+                         (param.starttime == "" || param.starttime == record.start.ToString()) &&
+                         (param.endtime == "" || param.endtime == record.end.ToString()) &&
+                         (param.state == "" || param.state == record.state)
                         )
                     {
                         // Add the record
